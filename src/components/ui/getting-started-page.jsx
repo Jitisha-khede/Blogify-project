@@ -1,7 +1,10 @@
 "use client";
 import { TypewriterEffectSmooth } from "./typewriter-effect";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export const GettingStarted = () => {
+  const navigate = useNavigate();
     const words = [
         {
           text: "Express,",
@@ -20,6 +23,9 @@ export const GettingStarted = () => {
           className: "text-blue-500 dark:text-blue-500",
         },
       ];
+      const handleGetStartedClick = () => {
+        navigate("/home");
+      };
       return (
         <>
           <div className="h-[50rem] w-full dark:bg-black bg-white  dark:bg-grid-white/[0.1] bg-grid-black/[0.1] relative flex items-center justify-center">
@@ -31,7 +37,7 @@ export const GettingStarted = () => {
           </p>
           <TypewriterEffectSmooth words={words} />
               <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4">
-                <button className="w-40 h-10 rounded-xl bg-black border dark:border-white border-transparent text-white text-sm">
+                <button onClick={handleGetStartedClick} className="w-40 h-10 rounded-xl bg-black border dark:border-white border-transparent text-white text-sm">
                   Get started
                 </button>
               </div>
