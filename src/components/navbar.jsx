@@ -1,6 +1,7 @@
 'use client';
 import { SearchBar } from './ui/searchbar';
 import { useTheme } from './ui/useTheme';
+import { Link } from 'react-router-dom';
 
 export const NavBar = () => {
 	const { theme, toggleTheme } = useTheme();
@@ -37,10 +38,9 @@ export const NavBar = () => {
 							</svg>
 						</a>
 
-						<a
-							className='p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 '
-							href='/write'
-							data-discover='true'>
+						<Link
+							to='/write'
+							className='p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 '>
 							<svg
 								height='18px'
 								width='18px'
@@ -64,7 +64,7 @@ export const NavBar = () => {
 									</g>
 								</g>
 							</svg>
-						</a>
+						</Link>
 					</div>
 
 					{/* Theme Toggle Button */}

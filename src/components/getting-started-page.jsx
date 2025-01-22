@@ -28,7 +28,7 @@ export const GettingStarted = () => {
 		},
 	];
 	const handleGetStartedClick = () => {
-		navigate('/home');
+		navigate('/write');
 	};
 	return (
 		<>
