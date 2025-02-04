@@ -7,8 +7,8 @@ import Link from 'next/link';
 
 const Write = () => {
 	const [blogs, setBlogs] = useState([]);
-	const [loading, setLoading] = useState(true);  // Loading state
-	const [error, setError] = useState(null);  // Error state
+	const [loading, setLoading] = useState(true); // Loading state
+	const [error, setError] = useState(null); // Error state
 
 	useEffect(() => {
 		const loadBlogs = async () => {
@@ -35,21 +35,21 @@ const Write = () => {
 	}
 
 	return (
-		<div id="Projects" className="w-full mx-auto px-8">
-		  {blogs.length > 0 ? (
-			<HoverEffect
-			  items={blogs.map((blog) => ({
-				title: blog.title,
-				description: blog.body?.substring(0, 100), // Use body if available, or fallback to an empty string
-				link: `/blogs/${blog._id}`, // Blog link based on the ID
-				image: blog.coverImageUrl || '/images/default-blog.png', // Fallback image if not available
-			  }))}
-			/>
-		  ) : (
-			<p>No blogs available.</p> // Show a message if no blogs exist
-		  )}
+		<div id='Projects' className='w-full mx-auto px-8'>
+			{blogs.length > 0 ? (
+				<HoverEffect
+					items={blogs.map(blog => ({
+						title: blog.title,
+						description: blog.body?.substring(0, 100), // Use body if available, or fallback to an empty string
+						link: `/blogs/${blog._id}`, // Blog link based on the ID
+						image: blog.coverImageUrl || '/images/default-blog.png', // Fallback image if not available
+					}))}
+				/>
+			) : (
+				<p>No blogs available.</p> // Show a message if no blogs exist
+			)}
 		</div>
-	  );
+	);
 };
 
 export default Write;

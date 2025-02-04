@@ -2,6 +2,7 @@
 import { SearchBar } from './ui/searchbar';
 import { useTheme } from './ui/useTheme';
 import { Link } from 'react-router-dom';
+import { IconBookmark } from '@tabler/icons-react';
 
 export const NavBar = () => {
 	const { theme, toggleTheme } = useTheme();
@@ -64,6 +65,14 @@ export const NavBar = () => {
 									</g>
 								</g>
 							</svg>
+						</Link>
+
+						<Link
+							to='/bookmarks'
+							className='p-2 rounded-lg transition-colors duration-200 text-blue-600 dark:text-blue-400'>
+							<div className='flex items-center gap-2'>
+								<IconBookmark className='w-5 h-5' />
+							</div>
 						</Link>
 					</div>
 
