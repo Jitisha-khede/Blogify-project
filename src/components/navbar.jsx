@@ -9,6 +9,7 @@ import {
 	IconArticle,
 	IconSun,
 	IconMoon,
+	IconFilter, // Add this import
 } from '@tabler/icons-react';
 
 const links = [
@@ -32,12 +33,17 @@ const links = [
 		to: '/bookmarks',
 		icon: IconBookmark,
 	},
+	{
+		title: 'Filter',
+		to: '/',
+		icon: IconFilter,
+	},
 ];
 
 export const NavBar = () => {
 	const { theme, toggleTheme } = useTheme();
 	return (
-		<div className='max-w-5xl mx-auto px-4'>
+		<div className='max-w-7xl mx-auto px-4'>
 			<div className='flex items-center justify-between h-16'>
 				{/* Brand Logo */}
 				<div className='font-semibold text-xl bg-gradient-to-r from-sky-400 to-blue-600 text-transparent bg-clip-text'>
@@ -70,7 +76,7 @@ export const NavBar = () => {
 						<img
 							src='/images/default-user.png'
 							alt='user'
-							className='w-5 border border-blue-500 rounded-full'
+							className='w-5 h-5 border border-blue-500 rounded-full'
 						/>
 					</div>
 				</div>
