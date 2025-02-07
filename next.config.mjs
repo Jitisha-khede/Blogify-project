@@ -14,6 +14,14 @@ const nextConfig = {
 	env: {
 		NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
 	},
+	async rewrites() {
+		return [
+			{
+				source: '/:path*',
+				destination: '/', // All routes point to home page
+			},
+		];
+	},
 };
 
 export default nextConfig;

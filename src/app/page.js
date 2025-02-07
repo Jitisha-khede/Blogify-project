@@ -1,7 +1,7 @@
 'use client';
 
 import {
-	BrowserRouter as Router,
+	HashRouter as Router,
 	Routes,
 	Route,
 	useLocation,
@@ -25,6 +25,7 @@ function Layout() {
 			<Routes>
 				<Route path='/' element={<GettingStarted />} />
 				<Route path='/write' element={<Write />} />
+				<Route path='/blog' element={<Blog />} />
 			</Routes>
 		</>
 	);
