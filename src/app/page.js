@@ -10,7 +10,8 @@ import React from 'react';
 import { ThemeProvider } from '@/components/ui/ThemeContext';
 import { NavBar } from '../components/navbar';
 import { GettingStarted } from '../components/getting-started-page';
-import Write from '../components/Write';
+import Write from '../components/home';
+import Blog from '@/components/blog';
 
 function Layout() {
 	const location = useLocation();
@@ -20,7 +21,7 @@ function Layout() {
 
 	return (
 		<>
-			{!hideNavbar && <NavBar />}
+			{<NavBar />}
 			<Routes>
 				<Route path='/' element={<GettingStarted />} />
 				<Route path='/write' element={<Write />} />
@@ -29,15 +30,14 @@ function Layout() {
 	);
 }
 
-
 function Home() {
 	return (
 		<>
 			<ThemeProvider>
-			<Router>
-				<Layout />
-			</Router>
-		</ThemeProvider>
+				<Router>
+					<Layout />
+				</Router>
+			</ThemeProvider>
 		</>
 	);
 }
