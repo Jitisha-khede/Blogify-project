@@ -15,12 +15,12 @@ import {
 const links = [
 	{
 		title: 'Home',
-		to: '/',
+		to: '',
 		icon: IconHome,
 	},
 	{
 		title: 'Write',
-		to: '/write',
+		to: '/create',
 		icon: IconPencil,
 	},
 	{

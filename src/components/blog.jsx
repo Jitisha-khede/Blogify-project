@@ -2,7 +2,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
-import { TracingBeam } from './ui/tracing-beam';
+import { NumberTicker } from './ui/number-ticker';
 import {
 	IconMessage,
 	IconThumbUp,
@@ -11,19 +11,24 @@ import {
 	IconLink,
 } from '@tabler/icons-react';
 
+import { useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { DirectionAwareHover } from './ui/direction-aware-hover';
+
 export default function Blog() {
+	const [isBookmarked, setIsBookmarked] = useState(false);
+	const imageUrl =
+		'https://images.unsplash.com/photo-1663765970236-f2acfde22237?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 	return (
 		<div className='w-fit max-w-full mx-10 pt-4 relative'>
 			{dummyContent.map((item, index) => (
 				<div key={`content-${index}`} className='mb-10'>
-					<p
-						className={twMerge(
-							'text-5xl mb-4 w-full text-center font-bold'
-						)}>
+					<p className={twMerge('text-5xl mb-4 w-full font-bold')}>
 						{item.title}
 					</p>
 
-					<div className='text-2xl prose prose-sm dark:prose-invert w-full max-w-none'>
+					<div className='text-2xl prose prose-sm dark:prose-invert w-full max-w-none mb-20'>
 						{item?.image && (
 							<Image
 								src={item.image}
@@ -47,27 +52,73 @@ export default function Blog() {
 							<button className='flex flex-1 items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
 								<IconThumbUp className='h-6 w-auto dark:text-white text-black' />
 								<span className='dark:text-white text-black'>
-									456
+									<NumberTicker
+										value={456}
+										className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
+									/>
 								</span>
 							</button>
 
 							<button className='flex flex-1 items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
 								<IconThumbDown className='h-6 w-auto text-black dark:text-white' />
-								<span className='dark:text-white text-black'>12</span>
+								<span className='dark:text-white text-black'>
+									<NumberTicker
+										value={456}
+										className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
+									/>
+								</span>
 							</button>
 							<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
 								<IconMessage className='h-6 w-auto text-black dark:text-white' />
-								<span className='dark:text-white text-black'>23</span>
+								<span className='dark:text-white text-black'>
+									<NumberTicker
+										value={456}
+										className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
+									/>
+								</span>
 							</button>
 
-							<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
-								<IconBookmark className='h-6 w-auto text-black dark:text-white' />
+							<button
+								className={`flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2 ${
+									isBookmarked
+										? 'text-blue-600  dark:bg-blue-900 dark:text-blue-400'
+										: ''
+								}`}
+								onClick={() => setIsBookmarked(!isBookmarked)}>
+								<IconBookmark
+									className={`h-6 w-auto ${
+										isBookmarked
+											? 'text-blue-600 dark:text-blue-400 fill-current'
+											: 'text-black dark:text-white'
+									}`}
+								/>
 							</button>
 							<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
 								<IconLink className='h-6 w-auto text-black dark:text-white' />
 							</button>
 						</div>
 						{item.description}
+					</div>
+					<div className='max-w-5xl mx-auto flex items-start gap-8'>
+						{' '}
+						{/* Changed items-center to items-start */}
+						<div className='w-1/2'>
+							<DirectionAwareHover imageUrl={imageUrl}>
+								<p className='font-bold text-xl'>In the mountains</p>
+								<p className='font-normal text-sm'>$1299 / night</p>
+							</DirectionAwareHover>
+						</div>
+						<div className='w-1/2 space-y-4 pt-4'>
+							{' '}
+							{/* Added pt-4 for top padding */}
+							<h3 className='text-2xl font-bold'>About Author</h3>
+							<p className='text-gray-600 dark:text-gray-300'>
+								Experience the serenity of mountain living in this
+								luxurious retreat. Nestled in the heart of nature,
+								this location offers breathtaking views and
+								unforgettable moments.
+							</p>
+						</div>
 					</div>
 				</div>
 			))}

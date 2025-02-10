@@ -24,7 +24,7 @@ function Layout() {
 			{<NavBar />}
 			<Routes>
 				<Route path='/' element={<GettingStarted />} />
-				<Route path='/write' element={<Write />} />
+				<Route path='/create' element={<Write />} />
 				<Route path='/blog' element={<Blog />} />
 			</Routes>
 		</>
