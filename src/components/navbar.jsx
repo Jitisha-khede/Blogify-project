@@ -92,7 +92,7 @@ export const NavBar = () => {
 								alt='user'
 								className='w-8 h-8 border-2 border-blue-500 rounded-full'
 							/> */}
-							<IconUser className='w-8 h-8 text-blue-600 dark:text-blue-400' />
+							<IconUser className='w-5 h-5 text-blue-600 dark:text-blue-400' />
 						</div>
 					</div>
 				</div>

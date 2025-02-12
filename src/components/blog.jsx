@@ -26,15 +26,15 @@ export default function Blog() {
 				<div
 					key={`content-${index}`}
 					className='mb-10 max-w-[85vw] mx-auto'>
-					<p
-						className={twMerge(
-							'text-2xl sm:text-3xl lg:text-4xl mb-4 w-full font-bold'
-						)}>
-						{item.title}
-					</p>
 					<div className='text-base sm:text-sm lg:text-lg prose prose-sm dark:prose-invert w-full max-w-[85vw] mb-10 justify-items-center mx-auto'>
 						{/* Image container with overlaid elements */}
 						<div className='relative mb-4'>
+							<p
+								className={twMerge(
+									'text-2xl sm:text-3xl lg:text-4xl w-full font-bold flex justify-self-center gap-4 mt-2 mb-4'
+								)}>
+								{item.title}
+							</p>
 							{item?.image && (
 								<>
 									<Image
@@ -45,67 +45,72 @@ export default function Blog() {
 										className='w-full max-w-7xl h-[200px] sm:h-[400px] lg:h-[600px] rounded-lg object-cover mx-auto'
 									/>
 
-									{/* Tags positioned at bottom right */}
-									<div className='absolute mt-2 botom-4 right-4 flex flex-wrap justify-end gap-2'>
-										{item.tags.map((tag, index) => (
-											<h2
-												key={index}
-												className='bg-red-600 dark:bg-red text-gray-900 dark:text-white rounded-full text-xs sm:text-sm w-fit px-3 py-1 backdrop-blur-3xl bg-opacity-70'>
-												{tag}
-											</h2>
-										))}
-									</div>
-									{/* Interaction buttons */}
-									<div className='flex gap-1 text-base sm:text-xl mb-4 justify-self-start mx-auto mt-1'>
-										<button className='flex dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-											<IconThumbUp className='h-6 w-auto dark:text-white text-black' />
-											<span className='dark:text-white text-black'>
-												<NumberTicker
-													value={456}
-													className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
-												/>
-											</span>
-										</button>
+									{/* Below image content */}
+									<div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mt-2 mb-4'>
+										{/* Interaction buttons */}
+										<div className='flex flex-wrap items-center gap-2 w-full md:w-auto mt-1'>
+											<button className='flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1.5 sm:px-3'>
+												<IconThumbUp className='h-5 w-auto dark:text-white text-black' />
+												<span className='dark:text-white text-black ml-1'>
+													<NumberTicker
+														value={456}
+														className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
+													/>
+												</span>
+											</button>
+											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+												<IconThumbDown className='h-5 w-auto text-black dark:text-white' />
+												<span className='dark:text-white text-black'>
+													<NumberTicker
+														value={456}
+														className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
+													/>
+												</span>
+											</button>
 
-										<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-											<IconThumbDown className='h-6 w-auto text-black dark:text-white' />
-											<span className='dark:text-white text-black'>
-												<NumberTicker
-													value={456}
-													className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
-												/>
-											</span>
-										</button>
+											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+												<IconMessage className='h-5 w-auto text-black dark:text-white' />
+												<span className='dark:text-white text-black'>
+													<NumberTicker
+														value={456}
+														className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
+													/>
+												</span>
+											</button>
 
-										<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-											<IconMessage className='h-6 w-auto text-black dark:text-white' />
-											<span className='dark:text-white text-black'>
-												<NumberTicker
-													value={456}
-													className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
-												/>
-											</span>
-										</button>
-
-										<button
-											className={`flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2 ${
-												isBookmarked
-													? 'text-blue-600 dark:bg-blue-900 dark:text-blue-400'
-													: ''
-											}`}
-											onClick={() => setIsBookmarked(!isBookmarked)}>
-											<IconBookmark
-												className={`h-6 w-auto ${
+											<button
+												className={`flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2 ${
 													isBookmarked
-														? 'text-blue-600 dark:text-blue-400 fill-current'
-														: 'text-black dark:text-white'
+														? 'text-blue-600 dark:bg-blue-900 dark:text-blue-400'
+														: ''
 												}`}
-											/>
-										</button>
+												onClick={() =>
+													setIsBookmarked(!isBookmarked)
+												}>
+												<IconBookmark
+													className={`h-5 w-auto ${
+														isBookmarked
+															? 'text-red-400 fill-current'
+															: 'text-black dark:text-white'
+													}`}
+												/>
+											</button>
 
-										<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-											<IconLink className='h-6 w-auto text-black dark:text-white' />
-										</button>
+											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+												<IconLink className='h-6 w-auto text-black dark:text-white' />
+											</button>
+										</div>
+
+										{/* Tags */}
+										<div className='flex flex-wrap gap-2 w-full md:w-auto justify-start md:justify-end'>
+											{item.tags.map((tag, index) => (
+												<h2
+													key={index}
+													className='bg-red-600 dark:bg-red text-gray-900 dark:text-white rounded-full text-xs sm:text-sm w-fit px-3 py-1 backdrop-blur-3xl bg-opacity-70'>
+													{tag}
+												</h2>
+											))}
+										</div>
 									</div>
 								</>
 							)}
@@ -114,7 +119,7 @@ export default function Blog() {
 						{/* Content */}
 						{item.description}
 					</div>
-					<div className='max-w-5xl flex flex-col sm:flex-row items-start gap-8'>
+					<div className='max-w-5xl flex flex-col sm:flex-row items-start gap-8 justify-between mx-auto'>
 						<div className='w-full'>
 							<DirectionAwareHover imageUrl={imageUrl}>
 								<p className='font-bold text-lg sm:text-xl'>
