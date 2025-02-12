@@ -21,98 +21,115 @@ export default function Blog() {
 	const imageUrl =
 		'https://images.unsplash.com/photo-1663765970236-f2acfde22237?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 	return (
-		<div className='w-fit max-w-full mx-10 pt-4 relative'>
+		<div className='relative min-h-screen w-full px-4 sm:px-6 lg:px-8 py-4 items-center justify-center'>
 			{dummyContent.map((item, index) => (
-				<div key={`content-${index}`} className='mb-10'>
-					<p className={twMerge('text-5xl mb-4 w-full font-bold')}>
+				<div
+					key={`content-${index}`}
+					className='mb-10 max-w-[85vw] mx-auto'>
+					<p
+						className={twMerge(
+							'text-2xl sm:text-3xl lg:text-4xl mb-4 w-full font-bold'
+						)}>
 						{item.title}
 					</p>
+					<div className='text-base sm:text-sm lg:text-lg prose prose-sm dark:prose-invert w-full max-w-[85vw] mb-10 justify-items-center mx-auto'>
+						{/* Image container with overlaid elements */}
+						<div className='relative mb-4'>
+							{item?.image && (
+								<>
+									<Image
+										src={item.image}
+										alt='blog thumbnail'
+										height='1000'
+										width='1000'
+										className='w-full max-w-7xl h-[200px] sm:h-[400px] lg:h-[600px] rounded-lg object-cover mx-auto'
+									/>
 
-					<div className='text-2xl prose prose-sm dark:prose-invert w-full max-w-none mb-20'>
-						{item?.image && (
-							<Image
-								src={item.image}
-								alt='blog thumbnail'
-								height='1000'
-								width='1000'
-								className='w-full h-[700px] rounded-lg mb-2 object-cover'
-							/>
-						)}
-						<div className='flex flex-wrap gap-2 mb-5'>
-							{item.tags.map((tag, index) => (
-								<h2
-									key={index}
-									className='bg-red-400 text-white rounded-full text-sm w-fit px-4 py-1'>
-									{tag}
-								</h2>
-							))}
+									{/* Tags positioned at bottom right */}
+									<div className='absolute mt-2 botom-4 right-4 flex flex-wrap justify-end gap-2'>
+										{item.tags.map((tag, index) => (
+											<h2
+												key={index}
+												className='bg-red-600 dark:bg-red text-gray-900 dark:text-white rounded-full text-xs sm:text-sm w-fit px-3 py-1 backdrop-blur-3xl bg-opacity-70'>
+												{tag}
+											</h2>
+										))}
+									</div>
+									{/* Interaction buttons */}
+									<div className='flex gap-1 text-base sm:text-xl mb-4 justify-self-start mx-auto mt-1'>
+										<button className='flex dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+											<IconThumbUp className='h-6 w-auto dark:text-white text-black' />
+											<span className='dark:text-white text-black'>
+												<NumberTicker
+													value={456}
+													className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
+												/>
+											</span>
+										</button>
+
+										<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+											<IconThumbDown className='h-6 w-auto text-black dark:text-white' />
+											<span className='dark:text-white text-black'>
+												<NumberTicker
+													value={456}
+													className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
+												/>
+											</span>
+										</button>
+
+										<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+											<IconMessage className='h-6 w-auto text-black dark:text-white' />
+											<span className='dark:text-white text-black'>
+												<NumberTicker
+													value={456}
+													className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
+												/>
+											</span>
+										</button>
+
+										<button
+											className={`flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2 ${
+												isBookmarked
+													? 'text-blue-600 dark:bg-blue-900 dark:text-blue-400'
+													: ''
+											}`}
+											onClick={() => setIsBookmarked(!isBookmarked)}>
+											<IconBookmark
+												className={`h-6 w-auto ${
+													isBookmarked
+														? 'text-blue-600 dark:text-blue-400 fill-current'
+														: 'text-black dark:text-white'
+												}`}
+											/>
+										</button>
+
+										<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+											<IconLink className='h-6 w-auto text-black dark:text-white' />
+										</button>
+									</div>
+								</>
+							)}
 						</div>
-						{/* Likes, share comment... */}
-						<div className='h-auto w-fit mt-4 mb-10 rounded-full dark:bg-black bg-white flex items-center justify-start gap-1 text-xl'>
-							<button className='flex flex-1 items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
-								<IconThumbUp className='h-6 w-auto dark:text-white text-black' />
-								<span className='dark:text-white text-black'>
-									<NumberTicker
-										value={456}
-										className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
-									/>
-								</span>
-							</button>
 
-							<button className='flex flex-1 items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
-								<IconThumbDown className='h-6 w-auto text-black dark:text-white' />
-								<span className='dark:text-white text-black'>
-									<NumberTicker
-										value={456}
-										className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
-									/>
-								</span>
-							</button>
-							<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
-								<IconMessage className='h-6 w-auto text-black dark:text-white' />
-								<span className='dark:text-white text-black'>
-									<NumberTicker
-										value={456}
-										className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
-									/>
-								</span>
-							</button>
-
-							<button
-								className={`flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2 ${
-									isBookmarked
-										? 'text-blue-600  dark:bg-blue-900 dark:text-blue-400'
-										: ''
-								}`}
-								onClick={() => setIsBookmarked(!isBookmarked)}>
-								<IconBookmark
-									className={`h-6 w-auto ${
-										isBookmarked
-											? 'text-blue-600 dark:text-blue-400 fill-current'
-											: 'text-black dark:text-white'
-									}`}
-								/>
-							</button>
-							<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
-								<IconLink className='h-6 w-auto text-black dark:text-white' />
-							</button>
-						</div>
+						{/* Content */}
 						{item.description}
 					</div>
-					<div className='max-w-5xl mx-auto flex items-start gap-8'>
-						{' '}
-						{/* Changed items-center to items-start */}
-						<div className='w-1/2'>
+					<div className='max-w-5xl flex flex-col sm:flex-row items-start gap-8'>
+						<div className='w-full'>
 							<DirectionAwareHover imageUrl={imageUrl}>
-								<p className='font-bold text-xl'>In the mountains</p>
-								<p className='font-normal text-sm'>$1299 / night</p>
+								<p className='font-bold text-lg sm:text-xl'>
+									In the mountains
+								</p>
+								<p className='font-normal text-xs sm:text-sm'>
+									$1299 / night
+								</p>
 							</DirectionAwareHover>
 						</div>
-						<div className='w-1/2 space-y-4 pt-4'>
-							{' '}
-							{/* Added pt-4 for top padding */}
-							<h3 className='text-2xl font-bold'>About Author</h3>
-							<p className='text-gray-600 dark:text-gray-300'>
+						<div className='w-full space-y-4 pt-4'>
+							<h3 className='text-xl sm:text-2xl font-bold'>
+								About Author
+							</h3>
+							<p className='text-sm sm:text-base text-gray-600 dark:text-gray-300'>
 								Experience the serenity of mountain living in this
 								luxurious retreat. Nestled in the heart of nature,
 								this location offers breathtaking views and
