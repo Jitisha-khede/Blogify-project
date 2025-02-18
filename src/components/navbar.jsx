@@ -33,7 +33,7 @@ export const NavBar = () => {
 		},
 		{
 			title: 'Blog',
-			to: '/blog',
+			to: '/blogs',
 			icon: IconArticle,
 		},
 		{

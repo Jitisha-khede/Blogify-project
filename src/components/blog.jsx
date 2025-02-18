@@ -26,7 +26,7 @@ export default function Blog() {
 			{Content.map((item, index) => (
 				<div
 					key={`content-${index}`}
-					className='mb-10 max-w-[85vw] mx-auto'>
+					className='mb-10 max-w-5xl mx-auto'>
 					<div className='text-base sm:text-sm lg:text-lg prose prose-sm dark:prose-invert w-full max-w-[85vw] mb-10 justify-items-center mx-auto'>
 						{/* Image Section*/}
 						<div className='relative mb-4'>
@@ -43,7 +43,7 @@ export default function Blog() {
 										alt='blog thumbnail'
 										height='1000'
 										width='1000'
-										className='w-full max-w-7xl h-[200px] sm:h-[400px] lg:h-[600px] rounded-lg object-cover mx-auto'
+										className='w-full max-w-[80vw] h-[200px] sm:h-[500px] lg:h-[700px] rounded-lg object-cover mx-auto'
 									/>
 
 									{/* Below image content */}

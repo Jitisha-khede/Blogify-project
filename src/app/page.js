@@ -10,8 +10,9 @@ import React from 'react';
 import { ThemeProvider } from '@/components/ui/ThemeContext';
 import { NavBar } from '../components/navbar';
 import { GettingStarted } from '../components/getting-started-page';
-import Write from '../components/home';
+import Catelog from '../components/home';
 import Blog from '@/components/blog';
+import Create from '@/components/create';
 
 function Layout() {
 	const location = useLocation();
@@ -22,8 +23,8 @@ function Layout() {
 			{!hideNavbar && <NavBar />}
 			<Routes>
 				<Route path='/' element={<GettingStarted />} />
-				<Route path='/create' element={<Write />} />
-				<Route path='/blog' element={<Blog />} />
+				<Route path='/create' element={<Create />} />
+				<Route path='/blogs' element={<Catelog />} />
 			</Routes>
 		</>
 	);
