@@ -15,19 +15,20 @@ import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { DirectionAwareHover } from './ui/direction-aware-hover';
+import { comment } from 'postcss';
 
 export default function Blog() {
 	const [isBookmarked, setIsBookmarked] = useState(false);
 	const imageUrl =
 		'https://images.unsplash.com/photo-1663765970236-f2acfde22237?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 	return (
-		<div className='relative min-h-screen w-full px-4 sm:px-6 lg:px-8 py-4 items-center justify-center'>
-			{dummyContent.map((item, index) => (
+		<div className='relative min-h-screen w-full px-4 sm:px-6 lg:px-8 py-4 items-center justify-center bg-slate-100 dark:bg-gray-900'>
+			{Content.map((item, index) => (
 				<div
 					key={`content-${index}`}
 					className='mb-10 max-w-[85vw] mx-auto'>
 					<div className='text-base sm:text-sm lg:text-lg prose prose-sm dark:prose-invert w-full max-w-[85vw] mb-10 justify-items-center mx-auto'>
-						{/* Image container with overlaid elements */}
+						{/* Image Section*/}
 						<div className='relative mb-4'>
 							<p
 								className={twMerge(
@@ -53,7 +54,7 @@ export default function Blog() {
 												<IconThumbUp className='h-5 w-auto dark:text-white text-black' />
 												<span className='dark:text-white text-black ml-1'>
 													<NumberTicker
-														value={456}
+														value={item.stats.likes}
 														className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
 													/>
 												</span>
@@ -62,7 +63,7 @@ export default function Blog() {
 												<IconThumbDown className='h-5 w-auto text-black dark:text-white' />
 												<span className='dark:text-white text-black'>
 													<NumberTicker
-														value={456}
+														value={item.stats.dislikes}
 														className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
 													/>
 												</span>
@@ -72,7 +73,7 @@ export default function Blog() {
 												<IconMessage className='h-5 w-auto text-black dark:text-white' />
 												<span className='dark:text-white text-black'>
 													<NumberTicker
-														value={456}
+														value={item.stats.comment}
 														className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
 													/>
 												</span>
@@ -118,28 +119,29 @@ export default function Blog() {
 
 						{/* Content */}
 						{item.description}
-					</div>
-					<div className='max-w-5xl flex flex-col sm:flex-row items-start gap-8 justify-between mx-auto'>
-						<div className='w-full'>
-							<DirectionAwareHover imageUrl={imageUrl}>
-								<p className='font-bold text-lg sm:text-xl'>
-									In the mountains
+
+						{/*About Author Section */}
+						<div className='max-w-5xl flex flex-col sm:flex-row items-start gap-8 justify-between mx-auto mt-20'>
+							<div className='w-full'>
+								<DirectionAwareHover imageUrl={imageUrl}>
+									<p className='font-bold text-lg sm:text-xl'>
+										{item.author}
+									</p>
+									{item.experience && (
+										<p className='font-normal text-xs sm:text-sm'>
+											{item.experience}
+										</p>
+									)}
+								</DirectionAwareHover>
+							</div>
+							<div className='w-full space-y-4 pt-4'>
+								<h3 className='text-xl sm:text-2xl font-bold'>
+									About Author
+								</h3>
+								<p className='text-sm sm:text-base text-gray-600 dark:text-gray-300'>
+									{item.about}
 								</p>
-								<p className='font-normal text-xs sm:text-sm'>
-									$1299 / night
-								</p>
-							</DirectionAwareHover>
-						</div>
-						<div className='w-full space-y-4 pt-4'>
-							<h3 className='text-xl sm:text-2xl font-bold'>
-								About Author
-							</h3>
-							<p className='text-sm sm:text-base text-gray-600 dark:text-gray-300'>
-								Experience the serenity of mountain living in this
-								luxurious retreat. Nestled in the heart of nature,
-								this location offers breathtaking views and
-								unforgettable moments.
-							</p>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -148,9 +150,27 @@ export default function Blog() {
 	);
 }
 
-const dummyContent = [
+const Content = [
 	{
 		title: 'Lorem Ipsum Dolor Sit Amet',
+		author: 'Harry Potter',
+		experience: 'Highly Experienced',
+		about: `Sit duis est minim proident non nisi velit non consectetur.
+					Esse adipisicing laboris consectetur enim ipsum
+					reprehenderit eu deserunt Lorem ut aliqua anim do. Duis
+					cupidatat qui irure cupidatat incididunt incididunt enim
+					magna id est qui sunt fugiat. Laboris do duis pariatur
+					fugiat Lorem aute sit ullamco. Qui deserunt non
+					reprehenderit dolore nisi velit exercitation Lorem qui do
+					enim culpa. Aliqua eiusmod in occaecat reprehenderit laborum
+					nostrud fugiat voluptate do Lorem culpa officia sint labore.
+					Tempor consectetur excepteur ut fugiat veniam commodo et
+					labore dolore commodo pariatur.`,
+		stats: {
+			likes: 456,
+			comment: 456,
+			dislikes: 456,
+		},
 		description: (
 			<>
 				<p>

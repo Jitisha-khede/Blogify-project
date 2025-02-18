@@ -15,13 +15,11 @@ import Blog from '@/components/blog';
 
 function Layout() {
 	const location = useLocation();
-
-	// Hide Navbar on the Getting Started page ("/")
 	const hideNavbar = location.pathname === '/';
 
 	return (
 		<>
-			{<NavBar />}
+			{!hideNavbar && <NavBar />}
 			<Routes>
 				<Route path='/' element={<GettingStarted />} />
 				<Route path='/create' element={<Write />} />

@@ -5,7 +5,7 @@ import { HoverEffect } from './ui/card-container';
 import { fetchBlogs } from '@/utils/api'; // Assuming you've created the API fetch function
 import Link from 'next/link';
 
-const Write = () => {
+const Catelog = () => {
 	const [blogs, setBlogs] = useState([]);
 	const [loading, setLoading] = useState(true); // Loading state
 	const [error, setError] = useState(null); // Error state
@@ -52,4 +52,4 @@ const Write = () => {
 	);
 };
 
-export default Write;
+export default Catelog;
