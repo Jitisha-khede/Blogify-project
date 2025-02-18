@@ -19,7 +19,7 @@ export function SearchBar() {
 		console.log('submitted');
 	};
 	return (
-		<div className='w-full md:w-[25rem] flex flex-col justify-center  items-center px-1'>
+		<div className='w-full md:w-[25rem] flex justify-items-center px-1'>
 			<PlaceholdersAndVanishInput
 				placeholders={placeholders}
 				onChange={handleChange}

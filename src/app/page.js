@@ -10,22 +10,30 @@ import React from 'react';
 import { ThemeProvider } from '@/components/ui/ThemeContext';
 import { NavBar } from '../components/navbar';
 import { GettingStarted } from '../components/getting-started-page';
+<<<<<<< HEAD
 import Blogs from '../components/home';
+=======
+import Catelog from '../components/home';
+>>>>>>> 2beaa133022ef0f2c7f0944e9e03c028f1d1e957
 import Blog from '@/components/blog';
+import Create from '@/components/create';
 
 function Layout() {
 	const location = useLocation();
-
-	// Hide Navbar on the Getting Started page ("/")
 	const hideNavbar = location.pathname === '/';
 
 	return (
 		<>
-			{<NavBar />}
+			{!hideNavbar && <NavBar />}
 			<Routes>
 				<Route path='/' element={<GettingStarted />} />
+<<<<<<< HEAD
 				<Route path='/blogs' element={<Blogs />} />
 				<Route path='/blog' element={<Blog />} />
+=======
+				<Route path='/create' element={<Create />} />
+				<Route path='/blogs' element={<Catelog />} />
+>>>>>>> 2beaa133022ef0f2c7f0944e9e03c028f1d1e957
 			</Routes>
 		</>
 	);

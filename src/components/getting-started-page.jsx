@@ -11,7 +11,7 @@ export const GettingStarted = () => {
 	const navigate = useNavigate();
 	const words = [
 		{
-			text: "Express, Engage and Elevate with\u00A0",
+			text: 'Express, Engage and Elevate with\u00A0',
 		},
 		{
 			text: 'Blogify.',
@@ -19,7 +19,11 @@ export const GettingStarted = () => {
 		},
 	];
 	const handleGetStartedClick = () => {
+<<<<<<< HEAD
 		navigate('/blogs');
+=======
+		navigate('/create');
+>>>>>>> 2beaa133022ef0f2c7f0944e9e03c028f1d1e957
 	};
 	return (
 		<>
