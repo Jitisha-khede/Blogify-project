@@ -5,19 +5,22 @@ import { HoverEffect } from './ui/card-container';
 import { fetchBlogs } from '@/utils/api'; // Assuming you've created the API fetch function
 import Link from 'next/link';
 
-const Write = () => {
+const Blogs = () => {
 	const [blogs, setBlogs] = useState([]);
 	const [loading, setLoading] = useState(true); // Loading state
 	const [error, setError] = useState(null); // Error state
 
 	useEffect(() => {
+		console.log("Fetching blogs...");
 		const loadBlogs = async () => {
 			try {
 				const data = await fetchBlogs();
-				setBlogs(data); // Set the blogs from the API response
-				setLoading(false); // Data is loaded, so stop loading
+				// console.log("Fetched data:", data); // Check what data is received
+				setBlogs(data);
+				setLoading(false);
 			} catch (err) {
-				setError('Error loading blogs'); // Handle any error
+				console.error("Error loading blogs:", err);
+				setError("Error loading blogs");
 				setLoading(false);
 			}
 		};
@@ -52,4 +55,4 @@ const Write = () => {
 	);
 };
 
-export default Write;
+export default Blogs;

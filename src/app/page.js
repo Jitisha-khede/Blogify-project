@@ -10,7 +10,7 @@ import React from 'react';
 import { ThemeProvider } from '@/components/ui/ThemeContext';
 import { NavBar } from '../components/navbar';
 import { GettingStarted } from '../components/getting-started-page';
-import Write from '../components/home';
+import Blogs from '../components/home';
 import Blog from '@/components/blog';
 
 function Layout() {
@@ -24,7 +24,7 @@ function Layout() {
 			{<NavBar />}
 			<Routes>
 				<Route path='/' element={<GettingStarted />} />
-				<Route path='/create' element={<Write />} />
+				<Route path='/blogs' element={<Blogs />} />
 				<Route path='/blog' element={<Blog />} />
 			</Routes>
 		</>

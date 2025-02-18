@@ -19,7 +19,7 @@ export const GettingStarted = () => {
 		},
 	];
 	const handleGetStartedClick = () => {
-		navigate('/write');
+		navigate('/blogs');
 	};
 	return (
 		<>
