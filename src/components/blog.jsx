@@ -16,29 +16,31 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { DirectionAwareHover } from './ui/direction-aware-hover';
 import { comment } from 'postcss';
+import CommentsSection from './comment-section';
 
 export default function Blog() {
 	const copyToClipboard = () => {
-		navigator.clipboard.writeText(window.location.href)
-		  .then(() => alert("Link copied to clipboard!"))
-		  .catch(err => console.error("Failed to copy:", err));
+		navigator.clipboard
+			.writeText(window.location.href)
+			.then(() => alert('Link copied to clipboard!'))
+			.catch(err => console.error('Failed to copy:', err));
 	};
-	
+
 	const [isBookmarked, setIsBookmarked] = useState(false);
 	const imageUrl =
 		'https://images.unsplash.com/photo-1663765970236-f2acfde22237?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 	return (
-		<div className='relative min-h-screen w-full px-4 sm:px-6 lg:px-8 py-4 items-center justify-center bg-slate-100 dark:bg-gray-900'>
+		<div className='relative min-h-screen w-full px-4 sm:px-6 lg:px-8 py-4 items-center justify-center bg-slate-100 dark:bg-gray-900 font-thin tracking-wide [word-spacing:0.1em]'>
 			{Content.map((item, index) => (
 				<div
 					key={`content-${index}`}
 					className='mb-10 max-w-5xl mx-auto'>
-					<div className='text-base sm:text-sm lg:text-lg prose prose-sm dark:prose-invert w-full max-w-[85vw] mb-10 justify-items-center mx-auto'>
+					<div className='text-base sm:text-sm lg:text-lg prose prose-sm dark:prose-invert w-full max-w-[85vw] mb-10 justify-items-center mx-auto '>
 						{/* Image Section*/}
 						<div className='relative mb-4'>
 							<p
 								className={twMerge(
-									'text-2xl sm:text-3xl lg:text-4xl w-full font-bold flex justify-self-center gap-4 mt-2 mb-4'
+									'text-2xl sm:text-3xl lg:text-4xl w-full font-bold flex justify-self-center gap-4 mt-2 mb-10'
 								)}>
 								{item.title}
 							</p>
@@ -55,42 +57,34 @@ export default function Blog() {
 									{/* Below image content */}
 									<div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mt-2 mb-4'>
 										{/* Interaction buttons */}
-										<div className='flex flex-wrap items-center gap-2 w-full md:w-auto mt-1'>
+										<div className='flex flex-wrap items-center gap-2 w-full min-w-80 md:w-auto mt-1'>
 											<button className='flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1.5 sm:px-3'>
-												<IconThumbUp className='h-5 w-auto dark:text-white text-black' />
-												<span className='dark:text-white text-black ml-1'>
+												<IconThumbUp className='h-5 w-auto ' />
+												<span className=' ml-1'>
 													<NumberTicker
 														value={item.stats.likes}
-														className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
+														className='whitespace-pre-wrap font-medium tracking-tighter '
 													/>
 												</span>
 											</button>
 											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-												<IconThumbDown className='h-5 w-auto text-black dark:text-white' />
-												<span className='dark:text-white text-black'>
-													<NumberTicker
-														value={item.stats.dislikes}
-														className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
-													/>
-												</span>
+												<IconThumbDown className='h-5 w-auto ' />
+												<NumberTicker
+													value={item.stats.dislikes}
+													className='whitespace-pre-wrap font-medium tracking-tighter '
+												/>
 											</button>
 
 											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-												<IconMessage className='h-5 w-auto text-black dark:text-white' />
-												<span className='dark:text-white text-black'>
-													<NumberTicker
-														value={item.stats.comment}
-														className='whitespace-pre-wrap font-medium tracking-tighter text-black dark:text-white'
-													/>
-												</span>
+												<IconMessage className='h-5 w-auto ' />
+												<NumberTicker
+													value={item.stats.comment}
+													className='whitespace-pre-wrap font-medium tracking-tighter '
+												/>
 											</button>
 
 											<button
-												className={`flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2 ${
-													isBookmarked
-														? 'text-blue-600 dark:bg-blue-900 dark:text-blue-400'
-														: ''
-												}`}
+												className={`flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2`}
 												onClick={() =>
 													setIsBookmarked(!isBookmarked)
 												}>
@@ -98,11 +92,13 @@ export default function Blog() {
 													className={`h-5 w-auto ${
 														isBookmarked
 															? 'text-red-400 fill-current'
-															: 'text-black dark:text-white'
+															: ''
 													}`}
 												/>
 											</button>
 
+											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+												<IconLink className='h-6 w-auto ' />
 											<button onClick={copyToClipboard} className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
 												<IconLink className='h-6 w-auto text-black dark:text-white' />
 											</button>
@@ -127,29 +123,25 @@ export default function Blog() {
 						{item.description}
 
 						{/*About Author Section */}
-						<div className='max-w-5xl flex flex-col sm:flex-row items-start gap-8 justify-between mx-auto mt-20'>
-							<div className='w-full'>
-								<DirectionAwareHover imageUrl={imageUrl}>
-									<p className='font-bold text-lg sm:text-xl'>
-										{item.author}
+						<div className='max-w-5xl justify-center items-center flex gap-8 mx-auto mt-20'>
+							<Image
+								src={imageUrl}
+								alt={item.author}
+								width={32}
+								height={32}
+								className='h-32 w-32 rounded-full'
+							/>
+							<div className='flex flex-col'>
+								<p className='font-medium text-base'>{item.author}</p>
+								{item.experience && (
+									<p className='font-light text-sm text-gray-600 dark:text-gray-400 truncate'>
+										{item.experience}
 									</p>
-									{item.experience && (
-										<p className='font-normal text-xs sm:text-sm'>
-											{item.experience}
-										</p>
-									)}
-								</DirectionAwareHover>
-							</div>
-							<div className='w-full space-y-4 pt-4'>
-								<h3 className='text-xl sm:text-2xl font-bold'>
-									About Author
-								</h3>
-								<p className='text-sm sm:text-base text-gray-600 dark:text-gray-300'>
-									{item.about}
-								</p>
+								)}
 							</div>
 						</div>
 					</div>
+					<CommentsSection />
 				</div>
 			))}
 		</div>
@@ -319,6 +311,24 @@ const Content = [
 		badge: 'React',
 		image:
 			'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=3540&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-		tags: ['happy', 'sad', 'on periods', 'horny', 'hot404'],
+		tags: [
+			'happy',
+			'sad',
+			'on periods',
+			'horny',
+			'hot404',
+			'sad',
+			'on periods',
+			'horny',
+			'hot404',
+			'sad',
+			'on periods',
+			'horny',
+			'hot404',
+			'sad',
+			'on periods',
+			'horny',
+			'hot404',
+		],
 	},
 ];
