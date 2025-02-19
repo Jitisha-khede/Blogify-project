@@ -15,7 +15,7 @@ const Catelog = () => {
 		const loadBlogs = async () => {
 			try {
 				const data = await fetchBlogs();
-				// console.log("Fetched data:", data); // Check what data is received
+				console.log("Fetched data:", data); // Check what data is received
 				setBlogs(data);
 				setLoading(false);
 			} catch (err) {
@@ -46,6 +46,8 @@ const Catelog = () => {
 						description: blog.body?.substring(0, 100), // Use body if available, or fallback to an empty string
 						link: `/blogs/${blog._id}`, // Blog link based on the ID
 						image: blog.coverImageUrl || '/images/default-blog.png', // Fallback image if not available
+						likes: blog.upvotes.length,
+						dislikes: blog.downvotes.length
 					}))}
 				/>
 			) : (

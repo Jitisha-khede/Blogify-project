@@ -72,14 +72,14 @@ export const HoverEffect = ({ items, className }) => {
 											<button className='flex flex-1 items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
 												<IconThumbUp className='h-6 w-auto dark:text-white text-black' />
 												<span className='dark:text-white text-black text-lg'>
-													456
+												{item.likes}
 												</span>
 											</button>
 
 											<button className='flex flex-1 items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
 												<IconThumbDown className='h-6 w-auto text-black dark:text-white' />
 												<span className='dark:text-white text-black text-lg'>
-													12
+												{item.dislikes}
 												</span>
 											</button>
 											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>

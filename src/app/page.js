@@ -12,7 +12,7 @@ import { NavBar } from '../components/navbar';
 import { GettingStarted } from '../components/getting-started-page';
 import Catelog from '../components/home';
 import Blog from '@/components/blog';
-import Create from '@/components/create';
+import Create from '@/components/createBlog';
 
 function Layout() {
 	const location = useLocation();
@@ -25,6 +25,7 @@ function Layout() {
 				<Route path='/' element={<GettingStarted />} />
 				<Route path='/create' element={<Create />} />
 				<Route path='/blogs' element={<Catelog />} />
+				<Route path='/blog' element={<Blog />} />
 			</Routes>
 		</>
 	);

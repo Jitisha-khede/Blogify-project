@@ -18,6 +18,12 @@ import { DirectionAwareHover } from './ui/direction-aware-hover';
 import { comment } from 'postcss';
 
 export default function Blog() {
+	const copyToClipboard = () => {
+		navigator.clipboard.writeText(window.location.href)
+		  .then(() => alert("Link copied to clipboard!"))
+		  .catch(err => console.error("Failed to copy:", err));
+	};
+	
 	const [isBookmarked, setIsBookmarked] = useState(false);
 	const imageUrl =
 		'https://images.unsplash.com/photo-1663765970236-f2acfde22237?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
@@ -97,7 +103,7 @@ export default function Blog() {
 												/>
 											</button>
 
-											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+											<button onClick={copyToClipboard} className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
 												<IconLink className='h-6 w-auto text-black dark:text-white' />
 											</button>
 										</div>
