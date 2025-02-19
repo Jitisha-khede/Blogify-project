@@ -23,8 +23,8 @@ function Layout() {
 			{!hideNavbar && <NavBar />}
 			<Routes>
 				<Route path='/' element={<GettingStarted />} />
+				<Route path='/blogs' element={<Blog />} />
 				<Route path='/create' element={<Create />} />
-				<Route path='/blogs' element={<Catelog />} />
 			</Routes>
 		</>
 	);
