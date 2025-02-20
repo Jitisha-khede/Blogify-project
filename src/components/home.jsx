@@ -42,12 +42,13 @@ const Catelog = () => {
 			{blogs.length > 0 ? (
 				<HoverEffect
 					items={blogs.map(blog => ({
-						title: blog.title,
-						description: blog.body?.substring(0, 100), // Use body if available, or fallback to an empty string
+						title: blog._doc.title,
+						description: blog._doc.body?.substring(0, 100), // Use body if available, or fallback to an empty string
 						link: `/blogs/${blog._id}`, // Blog link based on the ID
-						image: blog.coverImageUrl || '/images/default-blog.png', // Fallback image if not available
-						likes: blog.upvotes.length,
-						dislikes: blog.downvotes.length
+						image: blog._doc.coverImageUrl || '/images/default-blog.png', // Fallback image if not available
+						likes: blog._doc.upvotes.length,
+						dislikes: blog._doc.downvotes.length,
+						commentCount: blog.commentCount
 					}))}
 				/>
 			) : (

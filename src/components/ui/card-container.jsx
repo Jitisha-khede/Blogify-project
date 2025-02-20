@@ -16,6 +16,11 @@ import {
 
 export const HoverEffect = ({ items, className }) => {
 	let [hoveredIndex, setHoveredIndex] = useState(null);
+	const copyToClipboard = () => {
+		navigator.clipboard.writeText(window.location.href)
+		  .then(() => alert("Link copied to clipboard!"))
+		  .catch(err => console.error("Failed to copy:", err));
+	};
 
 	return (
 		<div
@@ -85,14 +90,14 @@ export const HoverEffect = ({ items, className }) => {
 											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
 												<IconMessage className='h-6 w-auto text-black dark:text-white' />
 												<span className='dark:text-white text-black text-lg'>
-													23
+												{item.commentCount}
 												</span>
 											</button>
 
 											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
 												<IconBookmark className='h-6 w-auto text-black dark:text-white' />
 											</button>
-											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
+											<button onClick={copyToClipboard} className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
 												<IconLink className='h-6 w-auto text-black dark:text-white' />
 											</button>
 										</div>
