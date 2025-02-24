@@ -18,10 +18,10 @@ export const fetchBlogs = async () => {
 export const fetchBlogById = async (id) => {
 	try {
 		const response = await fetch(`${API_URL}/api/blog/getBlogById/${id}`);
-		console.log("raw response:",response)
+		// console.log("raw response:",response)
 		if (!response.ok) throw new Error('Failed to fetch blog');
 		const data = await response.json();
-		console.log("Fetched Data:", data); // Check if response contains blog data
+		// console.log("Fetched Data:", data); // Check if response contains blog data
 		return data;
 	} catch (error) {
 		console.error('Error fetching blog:', error);
