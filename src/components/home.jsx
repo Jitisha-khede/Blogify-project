@@ -11,11 +11,11 @@ const Catelog = () => {
 	const [error, setError] = useState(null); // Error state
 
 	useEffect(() => {
-		console.log("Fetching blogs...");
+		// console.log("Fetching blogs...");
 		const loadBlogs = async () => {
 			try {
 				const data = await fetchBlogs();
-				console.log("Fetched data:", data); // Check what data is received
+				// console.log("Fetched data:", data); // Check what data is received
 				setBlogs(data);
 				setLoading(false);
 			} catch (err) {
@@ -38,13 +38,13 @@ const Catelog = () => {
 	}
 
 	return (
-		<div id='Projects' className='w-full mx-auto px-8'>
+		<div id='Projects' className='w-full mx-auto px-8' >
 			{blogs.length > 0 ? (
 				<HoverEffect
 					items={blogs.map(blog => ({
 						title: blog._doc.title,
 						description: blog._doc.body?.substring(0, 100), // Use body if available, or fallback to an empty string
-						link: `/blogs/${blog._id}`, // Blog link based on the ID
+						link: `/blog/${blog._doc._id}`, // Blog link based on the ID
 						image: blog._doc.coverImageUrl || '/images/default-blog.png', // Fallback image if not available
 						likes: blog._doc.upvotes.length,
 						dislikes: blog._doc.downvotes.length,

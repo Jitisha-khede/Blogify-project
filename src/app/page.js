@@ -26,7 +26,7 @@ function Layout() {
 				{/* <Route path='/blogs' element={<Blog />} /> */}
 				<Route path='/create' element={<Create />} />
 				<Route path='/blogs' element={<Catelog />} />
-				<Route path='/blog' element={<Blog />} />
+				<Route path='/blog/:id' element={<Blog />} />
 			</Routes>
 		</>
 	);
