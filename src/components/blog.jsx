@@ -96,11 +96,10 @@ export default function Blog() {
 													}`}
 												/>
 											</button>
-
-											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-												<IconLink className='h-6 w-auto ' />
-											<button onClick={copyToClipboard} className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-												<IconLink className='h-6 w-auto text-black dark:text-white' />
+											<button
+												onClick={copyToClipboard}
+												className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+												<IconLink className='h-6 w-auto' />
 											</button>
 										</div>
 
