@@ -36,6 +36,7 @@ const CommentsSection = () => {
 					isLiked: false,
 					timestamp: '1h',
 					replies: [],
+					replyToUsername: 'sarah_smith', // Adding this to track who this reply is for
 				},
 			],
 		},
@@ -44,6 +45,7 @@ const CommentsSection = () => {
 	const [newComment, setNewComment] = useState('');
 	const [replyText, setReplyText] = useState('');
 	const [replyingTo, setReplyingTo] = useState(null);
+	const [replyingToInfo, setReplyingToInfo] = useState(null); // To store username info
 
 	const handleAddComment = () => {
 		if (!newComment.trim()) return;
@@ -67,41 +69,54 @@ const CommentsSection = () => {
 	const handleAddReply = parentId => {
 		if (!replyText.trim()) return;
 
+		// Format text with @username if it's a reply to a reply
+		let formattedText = replyText.trim();
+		if (replyingToInfo) {
+			formattedText = `@${replyingToInfo.username} ${formattedText}`;
+		}
+
 		const reply = {
 			id: Date.now(),
 			userId: currentUser.id,
 			username: currentUser.username,
 			avatar: currentUser.avatar,
-			text: replyText.trim(),
+			text: formattedText,
 			likes: 0,
 			isLiked: false,
 			timestamp: 'now',
 			replies: [],
+			replyToUsername: replyingToInfo
+				? replyingToInfo.username
+				: null,
 		};
 
+		// Modified to only add replies to top-level comments
 		setComments(prevComments =>
-			findAndAddReply(prevComments, parentId, reply)
+			prevComments.map(comment => {
+				if (comment.id === parentId) {
+					return {
+						...comment,
+						replies: [...comment.replies, reply],
+					};
+				} else {
+					// Check if it's a reply to a reply (then add to parent comment)
+					const replyIndex = comment.replies.findIndex(
+						r => r.id === parentId
+					);
+					if (replyIndex >= 0) {
+						return {
+							...comment,
+							replies: [...comment.replies, reply],
+						};
+					}
+					return comment;
+				}
+			})
 		);
+
 		setReplyText('');
 		setReplyingTo(null);
-	};
-
-	const findAndAddReply = (commentsList, parentId, newReply) => {
-		return commentsList.map(item => {
-			if (item.id === parentId) {
-				return {
-					...item,
-					replies: [...(item.replies || []), newReply],
-				};
-			}
-			if (item.replies) {
-				return {
-					...item,
-					replies: findAndAddReply(item.replies, parentId, newReply),
-				};
-			}
-			return item;
-		});
+		setReplyingToInfo(null);
 	};
 
 	const toggleLike = commentId => {
@@ -129,7 +144,11 @@ const CommentsSection = () => {
 		});
 	};
 
-	const CommentItem = ({ comment, depth = 0 }) => {
+	const CommentItem = ({
+		comment,
+		isReply = false,
+		parentId = null,
+	}) => {
 		const inputRef = useRef(null);
 
 		// Add this effect to maintain focus
@@ -139,8 +158,24 @@ const CommentsSection = () => {
 			}
 		}, [replyingTo]);
 
+		const replyCount = comment.replies ? comment.replies.length : 0;
+
+		const handleReplyClick = () => {
+			if (replyingTo === comment.id) {
+				setReplyingTo(null);
+				setReplyingToInfo(null);
+			} else {
+				setReplyingTo(comment.id);
+				// Store username info for @mention
+				setReplyingToInfo({
+					username: comment.username,
+					id: comment.id,
+				});
+			}
+		};
+
 		return (
-			<div className={`flex gap-3 ${depth > 0 ? 'mt-3' : ''}`}>
+			<div className={`flex gap-3`}>
 				<img
 					src={comment.avatar}
 					alt={comment.username}
@@ -174,14 +209,16 @@ const CommentsSection = () => {
 									{comment.likes > 0 && <span>{comment.likes}</span>}
 								</button>
 								<button
-									onClick={() =>
-										setReplyingTo(
-											replyingTo === comment.id ? null : comment.id
-										)
-									}
+									onClick={handleReplyClick}
 									className='flex items-center gap-1 hover:text-gray-700'>
 									<MessageCircle className='w-4 h-4' />
 									<span>Reply</span>
+									{/* Show reply count for all comments and replies */}
+									{replyCount > 0 && (
+										<span className='text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full'>
+											{replyCount}
+										</span>
+									)}
 								</button>
 							</div>
 						</div>
@@ -202,14 +239,16 @@ const CommentsSection = () => {
 								onChange={e => setReplyText(e.target.value)}
 								onKeyDown={e => {
 									if (e.key === 'Enter' && replyText.trim()) {
-										handleAddReply(comment.id);
+										handleAddReply(isReply ? parentId : comment.id);
 									}
 								}}
-								placeholder={`Reply to ${comment.username}...`}
+								placeholder={`Replying to ${comment.username}...`}
 								className='flex-1 bg-gray-100 dark:bg-gray-700 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white'
 							/>
 							<button
-								onClick={() => handleAddReply(comment.id)}
+								onClick={() =>
+									handleAddReply(isReply ? parentId : comment.id)
+								}
 								disabled={!replyText.trim()}
 								className='text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed'>
 								<Send className='w-5 h-5' />
@@ -218,28 +257,11 @@ const CommentsSection = () => {
 								onClick={() => {
 									setReplyingTo(null);
 									setReplyText('');
+									setReplyingToInfo(null);
 								}}
 								className='text-gray-500 hover:text-gray-700'>
 								<X className='w-5 h-5' />
 							</button>
-						</div>
-					)}
-
-					{/* Nested Replies */}
-					{comment.replies && comment.replies.length > 0 && (
-						<div
-							className={`space-y-3 ${
-								depth === 0
-									? 'mt-3 pl-8 border-l-2 border-gray-100 dark:border-gray-700'
-									: 'mt-3'
-							}`}>
-							{comment.replies.map(reply => (
-								<CommentItem
-									key={reply.id}
-									comment={reply}
-									depth={depth + 1}
-								/>
-							))}
 						</div>
 					)}
 				</div>
@@ -281,6 +303,20 @@ const CommentsSection = () => {
 				{comments.map(comment => (
 					<div key={comment.id} className='p-4'>
 						<CommentItem comment={comment} />
+
+						{/* Replies - all in the same column with left indent */}
+						{comment.replies && comment.replies.length > 0 && (
+							<div className='mt-3 pl-8 border-l-2 border-gray-100 dark:border-gray-700 space-y-3'>
+								{comment.replies.map(reply => (
+									<CommentItem
+										key={reply.id}
+										comment={reply}
+										isReply={true}
+										parentId={comment.id}
+									/>
+								))}
+							</div>
+						)}
 					</div>
 				))}
 			</div>

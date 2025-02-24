@@ -75,7 +75,18 @@ const Create = () => {
 	const addTag = tag => {
 		tag = tag.trim();
 		if (tag && !tags.includes(tag)) {
+			if (tags.length >= 20) {
+				// Show error or notification that max tags limit reached
+				setErrors(prev => ({
+					...prev,
+					tags: 'Maximum 20 tags allowed',
+				}));
+				return;
+			}
 			setTags([...tags, tag]);
+			if (errors.tags) {
+				setErrors({ ...errors, tags: null });
+			}
 		}
 		setTagInput('');
 		tagInputRef.current.focus();
@@ -122,8 +133,6 @@ const Create = () => {
 	};
 
 	const handleSubmit = e => {
-		e.preventDefault();
-
 		if (validateForm()) {
 			// Process the form data - filter out empty paragraphs
 			const filteredParagraphs = paragraphs.filter(
@@ -263,11 +272,16 @@ const Create = () => {
 
 				{/* Tags */}
 				<div>
-					<label
-						htmlFor='tags'
-						className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
-						Tags
-					</label>
+					<div className='flex justify-between items-center mb-1'>
+						<label
+							htmlFor='tags'
+							className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
+							Tags
+						</label>
+						<span className='text-xs text-gray-500 dark:text-gray-400'>
+							{tags.length}/20 tags
+						</span>
+					</div>
 
 					<div
 						className={`flex flex-wrap gap-2 p-2 border rounded-md bg-white dark:bg-gray-700 ${
@@ -308,8 +322,11 @@ const Create = () => {
 								placeholder={
 									tags.length === 0
 										? 'Add at least one tag...'
+										: tags.length >= 20
+										? 'Maximum tags reached'
 										: 'Add more tags...'
 								}
+								disabled={tags.length >= 20}
 							/>
 
 							{showTagSuggestions &&
