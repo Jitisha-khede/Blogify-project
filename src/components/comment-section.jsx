@@ -6,6 +6,8 @@ import {
 	MoreHorizontal,
 	ThumbsUp,
 	X,
+	ChevronDown,
+	ChevronUp,
 } from 'lucide-react';
 
 const CommentsSection = () => {
@@ -39,6 +41,7 @@ const CommentsSection = () => {
 					replyToUsername: 'sarah_smith', // Adding this to track who this reply is for
 				},
 			],
+			showReplies: true, // Add this to track if replies are shown
 		},
 	]);
 
@@ -60,6 +63,7 @@ const CommentsSection = () => {
 			isLiked: false,
 			timestamp: 'now',
 			replies: [],
+			showReplies: true, // Default to showing replies for new comments
 		};
 
 		setComments(prevComments => [comment, ...prevComments]);
@@ -94,9 +98,11 @@ const CommentsSection = () => {
 		setComments(prevComments =>
 			prevComments.map(comment => {
 				if (comment.id === parentId) {
+					// Ensure replies are shown when a new reply is added
 					return {
 						...comment,
 						replies: [...comment.replies, reply],
+						showReplies: true, // Show replies when a new one is added
 					};
 				} else {
 					// Check if it's a reply to a reply (then add to parent comment)
@@ -107,6 +113,7 @@ const CommentsSection = () => {
 						return {
 							...comment,
 							replies: [...comment.replies, reply],
+							showReplies: true, // Show replies when a new one is added
 						};
 					}
 					return comment;
@@ -142,6 +149,21 @@ const CommentsSection = () => {
 			}
 			return item;
 		});
+	};
+
+	// Function to toggle showing/hiding replies
+	const toggleShowReplies = commentId => {
+		setComments(prevComments =>
+			prevComments.map(comment => {
+				if (comment.id === commentId) {
+					return {
+						...comment,
+						showReplies: !comment.showReplies,
+					};
+				}
+				return comment;
+			})
+		);
 	};
 
 	const CommentItem = ({
@@ -304,19 +326,46 @@ const CommentsSection = () => {
 					<div key={comment.id} className='p-4'>
 						<CommentItem comment={comment} />
 
-						{/* Replies - all in the same column with left indent */}
+						{/* Show/Hide Replies Button - only shown if there are replies */}
 						{comment.replies && comment.replies.length > 0 && (
-							<div className='mt-3 pl-8 border-l-2 border-gray-100 dark:border-gray-700 space-y-3'>
-								{comment.replies.map(reply => (
-									<CommentItem
-										key={reply.id}
-										comment={reply}
-										isReply={true}
-										parentId={comment.id}
-									/>
-								))}
+							<div className='flex items-center gap-4 text-sm text-gray-500 ml-11 mt-1'>
+								<button
+									onClick={() => toggleShowReplies(comment.id)}
+									className='flex items-center gap-1 hover:text-gray-700'>
+									{comment.showReplies ? (
+										<>
+											<ChevronUp className='w-4 h-4' />
+											<span>
+												Hide replies ({comment.replies.length})
+											</span>
+										</>
+									) : (
+										<>
+											<ChevronDown className='w-4 h-4' />
+											<span>
+												Show replies ({comment.replies.length})
+											</span>
+										</>
+									)}
+								</button>
 							</div>
 						)}
+
+						{/* Replies - all in the same column with left indent */}
+						{comment.replies &&
+							comment.replies.length > 0 &&
+							comment.showReplies && (
+								<div className='mt-3 pl-8 border-l-2 border-gray-100 dark:border-gray-700 space-y-3'>
+									{comment.replies.map(reply => (
+										<CommentItem
+											key={reply.id}
+											comment={reply}
+											isReply={true}
+											parentId={comment.id}
+										/>
+									))}
+								</div>
+							)}
 					</div>
 				))}
 			</div>
