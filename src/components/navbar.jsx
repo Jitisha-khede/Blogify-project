@@ -1,8 +1,8 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { SearchBar } from './ui/searchbar';
 import { useTheme } from './ui/useTheme';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
 	IconBookmarks,
 	IconHome,
@@ -19,6 +19,26 @@ export const NavBar = () => {
 	const { theme, toggleTheme } = useTheme();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
+	const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+	const profileRef = useRef(null);
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		function handleClickOutside(event) {
+			if (
+				profileRef.current &&
+				!profileRef.current.contains(event.target)
+			) {
+				setIsProfileOpen(false);
+			}
+		}
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, []);
 
 	const links = [
 		{
@@ -103,13 +123,49 @@ export const NavBar = () => {
 									)}
 								</button>
 							</div>
-							<div>
-								{/* <img
-								src='/images/default-user.png'
-								alt='user'
-								className='w-8 h-8 border-2 border-blue-500 rounded-full'
-								/> */}
-								<IconUser className='w-5 h-5 text-blue-600 dark:text-blue-400' />
+							<div className='relative' ref={profileRef}>
+								<button
+									onClick={() => setIsProfileOpen(!isProfileOpen)}
+									className='p-2 rounded-lg transition-colors duration-200'
+									aria-label='Profile menu'>
+									<img
+										src='public/images/profile.jpg'
+										alt='Profile'
+										className='w-8 h-8 rounded-full object-cover border-2 border-blue-600 dark:border-blue-400'
+									/>
+
+									{/* <IconUser className='w-5 h-5 text-blue-600 dark:text-blue-400' /> */}
+								</button>
+
+								{isProfileOpen && (
+									<div className='absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-lg shadow-lg py-2 border dark:border-gray-800 z-50'>
+										<button
+											onClick={() => {
+												setIsProfileOpen(false);
+												// Add navigation to profile show profile page
+											}}
+											className='w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-800'>
+											Show Profile
+										</button>
+										<button
+											onClick={() => {
+												setIsProfileOpen(false);
+												navigate('/edit-profile');
+											}}
+											className='w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-800'>
+											Edit Profile
+										</button>
+										<div className='border-t dark:border-gray-800 my-1'></div>
+										<button
+											onClick={() => {
+												setIsProfileOpen(false);
+												// Add login/logout logic here
+											}}
+											className='w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-800'>
+											Logout
+										</button>
+									</div>
+								)}
 							</div>
 						</div>
 					</div>
