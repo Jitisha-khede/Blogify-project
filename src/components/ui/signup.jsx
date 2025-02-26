@@ -33,7 +33,7 @@ export default function SignupForm({ onToggle }) {
 				Signup to join our community of blogifiers
 			</p>
 			<form
-				className='flex-1 overflow-y-auto max-h-96 my-8'
+				className='flex-1 overflow-y-auto overflow-x-hidden max-h-96 my-8'
 				onSubmit={handleSubmit}>
 				<LabelInputContainer className='mb-4'>
 					<Label htmlFor='username'>Username</Label>

@@ -127,7 +127,7 @@ export const NavBar = () => {
 			{isMenuOpen && (
 				<div
 					className={`md:hidden fixed inset-x-0 top-16 bg-white dark:bg-gray-900 border-t 
-					dark:border-gray-800 shadow-lg z-40 h-[calc(100vh-4rem)] transition-transform duration-300 
+					dark:border-gray-800 shadow-lg z-50 h-[calc(100vh-4rem)] transition-transform duration-300 
 					${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
 					{/* Mobile Search Bar */}
 

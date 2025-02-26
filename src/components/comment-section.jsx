@@ -8,6 +8,7 @@ import {
 	X,
 	ChevronDown,
 	ChevronUp,
+	ArrowUpDown,
 } from 'lucide-react';
 
 const CommentsSection = () => {
@@ -49,6 +50,25 @@ const CommentsSection = () => {
 	const [replyText, setReplyText] = useState('');
 	const [replyingTo, setReplyingTo] = useState(null);
 	const [replyingToInfo, setReplyingToInfo] = useState(null); // To store username info
+	const [sortBy, setSortBy] = useState('latest'); // 'latest', 'oldest', 'most-liked'
+	const [showSortOptions, setShowSortOptions] = useState(false);
+
+	const sortButtonRef = useRef(null);
+
+	useEffect(() => {
+		const handleClickOutside = event => {
+			if (
+				sortButtonRef.current &&
+				!sortButtonRef.current.contains(event.target)
+			) {
+				setShowSortOptions(false);
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () =>
+			document.removeEventListener('mousedown', handleClickOutside);
+	}, []);
 
 	const handleAddComment = () => {
 		if (!newComment.trim()) return;
@@ -164,6 +184,23 @@ const CommentsSection = () => {
 				return comment;
 			})
 		);
+	};
+
+	const sortComments = (comments, method) => {
+		return [...comments].sort((a, b) => {
+			switch (method) {
+				case 'oldest':
+					return a.id - b.id;
+				case 'most-liked':
+					return b.likes - a.likes;
+				case 'most-replied':
+					return b.replies.length - a.replies.length;
+				case 'least-replied':
+					return a.replies.length - b.replies.length;
+				default: // latest
+					return b.id - a.id;
+			}
+		});
 	};
 
 	const CommentItem = ({
@@ -293,7 +330,6 @@ const CommentsSection = () => {
 
 	return (
 		<div className='w-full max-w-5xl mx-auto'>
-			{/* Comment Input */}
 			<div className='flex items-center gap-3 p-4 border-b dark:border-gray-700'>
 				<img
 					src={currentUser.avatar}
@@ -318,11 +354,45 @@ const CommentsSection = () => {
 					className='text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed'>
 					<Send className='w-5 h-5' />
 				</button>
+				<div className='relative' ref={sortButtonRef}>
+					<button
+						onClick={() => setShowSortOptions(!showSortOptions)}
+						className='text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700'
+						title='Sort comments'>
+						<ArrowUpDown className='w-5 h-5' />
+					</button>
+					{showSortOptions && (
+						<div className='absolute right-0 mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border dark:border-gray-700 z-10'>
+							{[
+								{ id: 'latest', label: 'Latest' },
+								{ id: 'oldest', label: 'Oldest' },
+								{ id: 'most-liked', label: 'Most Liked' },
+								{ id: 'most-replied', label: 'Most Replied' },
+								{ id: 'least-replied', label: 'Least Replied' },
+							].map(option => (
+								<button
+									key={option.id}
+									onClick={() => {
+										setSortBy(option.id);
+										setShowSortOptions(false);
+									}}
+									className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700
+                  ${
+										sortBy === option.id
+											? 'text-blue-500'
+											: 'text-gray-700 dark:text-gray-300'
+									}`}>
+									{option.label}
+								</button>
+							))}
+						</div>
+					)}
+				</div>
 			</div>
 
 			{/* Comments List */}
 			<div className='divide-y dark:divide-gray-700'>
-				{comments.map(comment => (
+				{sortComments(comments, sortBy).map(comment => (
 					<div key={comment.id} className='p-4'>
 						<CommentItem comment={comment} />
 

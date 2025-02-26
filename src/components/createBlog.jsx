@@ -75,11 +75,11 @@ const Create = () => {
 	const addTag = tag => {
 		tag = tag.trim();
 		if (tag && !tags.includes(tag)) {
-			if (tags.length >= 20) {
+			if (tags.length >= 8) {
 				// Show error or notification that max tags limit reached
 				setErrors(prev => ({
 					...prev,
-					tags: 'Maximum 20 tags allowed',
+					tags: 'Maximum 8 tags allowed',
 				}));
 				return;
 			}
@@ -279,7 +279,7 @@ const Create = () => {
 							Tags
 						</label>
 						<span className='text-xs text-gray-500 dark:text-gray-400'>
-							{tags.length}/20 tags
+							{tags.length}/8 tags
 						</span>
 					</div>
 
@@ -322,11 +322,11 @@ const Create = () => {
 								placeholder={
 									tags.length === 0
 										? 'Add at least one tag...'
-										: tags.length >= 20
+										: tags.length >= 8
 										? 'Maximum tags reached'
 										: 'Add more tags...'
 								}
-								disabled={tags.length >= 20}
+								disabled={tags.length >= 8}
 							/>
 
 							{showTagSuggestions &&
