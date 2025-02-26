@@ -60,3 +60,19 @@ export const fetchUserById = async id => {
 		return null;
 	}
 };
+
+export const fetchComments = async (blogId) => {
+	try {
+		const response = await fetch(`${API_URL}/api/comment/getComments/${blogId}`);
+		const result = await response.json();
+		if (result.success) {
+			return result.data.comments;
+		} else {
+			throw new Error('Failed to fetch comments');
+		}
+	}
+	catch (error) {
+		console.error('Error fetching comments:', error);
+		return [];
+	}
+}

@@ -9,122 +9,160 @@ import {
 	ChevronDown,
 	ChevronUp,
 } from 'lucide-react';
+import { fetchComments } from '@/utils/api';
 
-const CommentsSection = () => {
+const CommentsSection = ({ blogId }) => {
+	const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState("");
+    const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		const getComments = async () => {
+			const commentsData = await fetchComments(blogId);
+			console.log("comments data: ", commentsData);
+	
+			// Create a map of comments by id
+			const commentMap = {};
+			commentsData.forEach(comment => {
+				commentMap[comment.id] = { ...comment, replies: [] };
+
+			});
+	
+			// Populate replies
+			const structuredComments = [];
+			commentsData.forEach(comment => {
+				if (comment.parentComment) {
+					// If the comment has a parent, add it as a reply
+					if (commentMap[comment.parentComment]) {
+						commentMap[comment.parentComment].replies.push(commentMap[comment.id]);
+					}
+				} else {
+					// If no parent, it's a top-level comment
+					structuredComments.push(commentMap[comment.id]);
+				}
+			});
+	
+			setComments(structuredComments);
+			console.log("structured comments: ", structuredComments);
+		};
+	
+		getComments();
+	}, [blogId]);
+
 	const currentUser = {
 		id: 'user1',
 		username: 'john_doe',
 		avatar: '/api/placeholder/32/32',
 	};
 
-	const [comments, setComments] = useState([
-		{
-			id: 1,
-			userId: 'user2',
-			username: 'sarah_smith',
-			avatar: '/api/placeholder/32/32',
-			text: 'This is amazing! 🎉',
-			likes: 24,
-			isLiked: false,
-			timestamp: '2h',
-			replies: [
-				{
-					id: 101,
-					userId: 'user3',
-					username: 'mike_brown',
-					avatar: '/api/placeholder/32/32',
-					text: 'Totally agree!',
-					likes: 5,
-					isLiked: false,
-					timestamp: '1h',
-					replies: [],
-					replyToUsername: 'sarah_smith', // Adding this to track who this reply is for
-				},
-			],
-			showReplies: true, // Add this to track if replies are shown
-		},
-	]);
+		// const [comments, setComments] = useState([
+		// 	{
+		// 		id: 1,
+		// 		userId: 'user2',
+		// 		username: 'sarah_smith',
+		// 		avatar: '/api/placeholder/32/32',
+		// 		text: 'This is amazing! 🎉',
+		// 		likes: 24,
+		// 		isLiked: false,
+		// 		timestamp: '2h',
+		// 		replies: [
+		// 			{
+		// 				id: 101,
+		// 				userId: 'user3',
+		// 				username: 'mike_brown',
+		// 				avatar: '/api/placeholder/32/32',
+		// 				text: 'Totally agree!',
+		// 				likes: 5,
+		// 				isLiked: false,
+		// 				timestamp: '1h',
+		// 				replies: [],
+		// 				replyToUsername: 'sarah_smith', // Adding this to track who this reply is for
+		// 			},
+		// 		],
+		// 		showReplies: true, // Add this to track if replies are shown
+		// 	},
+		// ]);
 
-	const [newComment, setNewComment] = useState('');
+	// const [newComment, setNewComment] = useState('');
 	const [replyText, setReplyText] = useState('');
 	const [replyingTo, setReplyingTo] = useState(null);
 	const [replyingToInfo, setReplyingToInfo] = useState(null); // To store username info
 
-	const handleAddComment = () => {
-		if (!newComment.trim()) return;
+	// const handleAddComment = () => {
+	// 	if (!newComment.trim()) return;
 
-		const comment = {
-			id: Date.now(),
-			userId: currentUser.id,
-			username: currentUser.username,
-			avatar: currentUser.avatar,
-			text: newComment.trim(),
-			likes: 0,
-			isLiked: false,
-			timestamp: 'now',
-			replies: [],
-			showReplies: true, // Default to showing replies for new comments
-		};
+	// 	const comment = {
+	// 		id: Date.now(),
+	// 		userId: currentUser.id,
+	// 		username: currentUser.username,
+	// 		avatar: currentUser.avatar,
+	// 		text: newComment.trim(),
+	// 		likes: 0,
+	// 		isLiked: false,
+	// 		timestamp: 'now',
+	// 		replies: [],
+	// 		showReplies: true, // Default to showing replies for new comments
+	// 	};
 
-		setComments(prevComments => [comment, ...prevComments]);
-		setNewComment('');
-	};
+	// 	setComments(prevComments => [comment, ...prevComments]);
+	// 	setNewComment('');
+	// };
 
-	const handleAddReply = parentId => {
-		if (!replyText.trim()) return;
+	// const handleAddReply = parentId => {
+	// 	if (!replyText.trim()) return;
 
-		// Format text with @username if it's a reply to a reply
-		let formattedText = replyText.trim();
-		if (replyingToInfo) {
-			formattedText = `@${replyingToInfo.username} ${formattedText}`;
-		}
+	// 	// Format text with @username if it's a reply to a reply
+	// 	let formattedText = replyText.trim();
+	// 	if (replyingToInfo) {
+	// 		formattedText = `@${replyingToInfo.username} ${formattedText}`;
+	// 	}
 
-		const reply = {
-			id: Date.now(),
-			userId: currentUser.id,
-			username: currentUser.username,
-			avatar: currentUser.avatar,
-			text: formattedText,
-			likes: 0,
-			isLiked: false,
-			timestamp: 'now',
-			replies: [],
-			replyToUsername: replyingToInfo
-				? replyingToInfo.username
-				: null,
-		};
+	// 	const reply = {
+	// 		id: Date.now(),
+	// 		userId: currentUser.id,
+	// 		username: currentUser.username,
+	// 		avatar: currentUser.avatar,
+	// 		text: formattedText,
+	// 		likes: 0,
+	// 		isLiked: false,
+	// 		timestamp: 'now',
+	// 		replies: [],
+	// 		replyToUsername: replyingToInfo
+	// 			? replyingToInfo.username
+	// 			: null,
+	// 	};
 
-		// Modified to only add replies to top-level comments
-		setComments(prevComments =>
-			prevComments.map(comment => {
-				if (comment.id === parentId) {
-					// Ensure replies are shown when a new reply is added
-					return {
-						...comment,
-						replies: [...comment.replies, reply],
-						showReplies: true, // Show replies when a new one is added
-					};
-				} else {
-					// Check if it's a reply to a reply (then add to parent comment)
-					const replyIndex = comment.replies.findIndex(
-						r => r.id === parentId
-					);
-					if (replyIndex >= 0) {
-						return {
-							...comment,
-							replies: [...comment.replies, reply],
-							showReplies: true, // Show replies when a new one is added
-						};
-					}
-					return comment;
-				}
-			})
-		);
+	// 	// Modified to only add replies to top-level comments
+	// 	setComments(prevComments =>
+	// 		prevComments.map(comment => {
+	// 			if (comment.id === parentId) {
+	// 				// Ensure replies are shown when a new reply is added
+	// 				return {
+	// 					...comment,
+	// 					replies: [...comment.replies, reply],
+	// 					showReplies: true, // Show replies when a new one is added
+	// 				};
+	// 			} else {
+	// 				// Check if it's a reply to a reply (then add to parent comment)
+	// 				const replyIndex = comment.replies.findIndex(
+	// 					r => r.id === parentId
+	// 				);
+	// 				if (replyIndex >= 0) {
+	// 					return {
+	// 						...comment,
+	// 						replies: [...comment.replies, reply],
+	// 						showReplies: true, // Show replies when a new one is added
+	// 					};
+	// 				}
+	// 				return comment;
+	// 			}
+	// 		})
+	// 	);
 
-		setReplyText('');
-		setReplyingTo(null);
-		setReplyingToInfo(null);
-	};
+	// 	setReplyText('');
+	// 	setReplyingTo(null);
+	// 	setReplyingToInfo(null);
+	// };
 
 	const toggleLike = commentId => {
 		setComments(prevComments =>
@@ -190,17 +228,19 @@ const CommentsSection = () => {
 				setReplyingTo(comment.id);
 				// Store username info for @mention
 				setReplyingToInfo({
-					username: comment.username,
+					username: comment.user.userName,
 					id: comment.id,
 				});
 			}
 		};
 
+		// console.log("comment: ", comment);
+
 		return (
 			<div className={`flex gap-3`}>
 				<img
-					src={comment.avatar}
-					alt={comment.username}
+					src={comment.user.profileImage}
+					alt={comment.user.userName}
 					className='w-8 h-8 rounded-full'
 				/>
 				<div className='flex-1'>
@@ -208,12 +248,12 @@ const CommentsSection = () => {
 						<div className='space-y-1'>
 							<div className='flex items-center gap-2'>
 								<span className='font-medium text-sm '>
-									{comment.username}
+									{comment.user.userName}
 								</span>
 								<span className='text-xs '>{comment.timestamp}</span>
 							</div>
 							<p className='text-sm text-gray-800 dark:text-gray-200'>
-								{comment.text}
+								{comment.content}
 							</p>
 							<div className='flex items-center gap-4 text-sm text-gray-500'>
 								<button
@@ -313,7 +353,7 @@ const CommentsSection = () => {
 					className='flex-1 bg-gray-100 dark:bg-gray-700 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white'
 				/>
 				<button
-					onClick={handleAddComment}
+					// onClick={handleAddComment}
 					disabled={!newComment.trim()}
 					className='text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed'>
 					<Send className='w-5 h-5' />

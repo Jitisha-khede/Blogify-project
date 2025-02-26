@@ -186,7 +186,7 @@ export default function Blog() {
 						)}
 						
 					</div>
-					<CommentsSection />
+					<CommentsSection blogId={blog._id}/>
 				</div>
 			)
 		</div>
