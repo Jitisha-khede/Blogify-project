@@ -33,7 +33,7 @@ function Layout() {
 				<Route path='/blogs' element={<Catelog />} /> */
 				<Route path='/blog/:id' element={<Blog />} />
 				<Route path='/signup' element={<SignupForm />} />
-				{/* <Route path='/login' element={<Form />} /> */}
+				<Route path='/login' element={<Form />} />
 			</Routes>
 		</>
 	);
