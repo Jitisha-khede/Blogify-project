@@ -11,7 +11,7 @@ const Form = ({ onClose }) => {
 	};
 
 	return (
-		<div className='absolute inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50'>
+		<div className='absolute mt-16 inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50'>
 			<div className='relative w-full max-w-md '>
 				<button
 					className='absolute top-16 right-1 text-black dark:text-gray-50 z-10 hover:text-gray-400 text-4xl'
