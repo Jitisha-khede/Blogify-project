@@ -14,6 +14,9 @@ import { GettingStarted } from '../components/getting-started-page';
 import Catelog from '../components/home';
 import Blog from '@/components/blog';
 import Create from '@/components/createBlog';
+import SignupForm from '@/components/ui/signup';
+import LoginForm from '@/components/ui/login';
+import Form from '@/components/form';
 
 function Layout() {
 	const location = useLocation();
@@ -25,13 +28,12 @@ function Layout() {
 			{!hideNavbar && <NavBar setSearchResults={setSearchResults}/>}
 			<Routes>
 				<Route path='/' element={<GettingStarted />} />
-				{/* <Route path='/blogs' element={<Home />} /> */}
+				{/* <Route path='/blogs' element={<Blog />} /> */}
 				<Route path='/create' element={<Create />} />
-				<Route
-					path='/blogs'
-					element={<Catelog blogs={searchResults || undefined} setSearchResults={setSearchResults} />}
-				/>
+				<Route path='/blogs' element={<Catelog />} /> */
 				<Route path='/blog/:id' element={<Blog />} />
+				<Route path='/signup' element={<SignupForm />} />
+				{/* <Route path='/login' element={<Form />} /> */}
 			</Routes>
 		</>
 	);

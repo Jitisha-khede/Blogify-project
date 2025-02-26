@@ -45,7 +45,7 @@ export const NavBar = () => {
 		},
 		{
 			title: 'Filter',
-			to: '/',
+			to: '/login',
 			icon: IconFilter,
 		},
 	];
