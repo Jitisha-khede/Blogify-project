@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { TypewriterEffectSmooth } from './ui/typewriter-effect';
 import {
 	BrowserRouter as Router,
@@ -6,6 +7,7 @@ import {
 	Route,
 } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import Form from './form';
 
 export const GettingStarted = () => {
 	const navigate = useNavigate();
@@ -18,9 +20,11 @@ export const GettingStarted = () => {
 			className: 'text-blue-500 dark:text-blue-500',
 		},
 	];
+
 	const handleGetStartedClick = () => {
 		navigate('/blogs');
 	};
+
 	return (
 		<>
 			<div className='h-[50rem] w-full dark:bg-black bg-white  dark:bg-grid-white/[0.1] bg-grid-black/[0.1] relative flex items-center justify-center'>
