@@ -1,12 +1,14 @@
 'use client';
 import Image from 'next/image';
-import React, { useEffect, useId, useRef } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useOutsideClick } from './ui/use-outside-click';
+import { IconTrash } from '@tabler/icons-react';
 
 export default function BookmarksDropdown({ isOpen, onClose }) {
 	const ref = useRef(null);
 	const id = useId();
+	const [bookmarks, setBookmarks] = useState(cards);
 
 	useOutsideClick(ref, onClose);
 
@@ -24,6 +26,12 @@ export default function BookmarksDropdown({ isOpen, onClose }) {
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [isOpen, onClose]);
 
+	const handleDelete = title => {
+		setBookmarks(prevBookmarks =>
+			prevBookmarks.filter(bookmark => bookmark.title !== title)
+		);
+	};
+
 	return (
 		<AnimatePresence>
 			{isOpen && (
@@ -34,29 +42,49 @@ export default function BookmarksDropdown({ isOpen, onClose }) {
 					exit={{ opacity: 0, y: -10 }}
 					className='absolute right-0 top-16 w-96 max-h-[100vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50'>
 					<ul className='py-2'>
-						{cards.map(card => (
-							<motion.div
-								key={`card-${card.title}-${id}`}
-								className='p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer'>
-								<div className='flex gap-4 items-center'>
-									<Image
-										width={48}
-										height={48}
-										// src={card.src}
-										alt={card.title}
-										className='h-12 w-12 rounded-lg object-cover object-top'
-									/>
-									<div>
-										<h3 className='font-medium text-neutral-800 dark:text-neutral-200'>
-											{card.title}
-										</h3>
-										<p className='text-sm text-neutral-600 dark:text-neutral-400'>
-											{card.description}
-										</p>
+						<AnimatePresence mode='popLayout'>
+							{bookmarks.map(card => (
+								<motion.div
+									key={`card-${card.title}-${id}`}
+									initial={{ opacity: 1, height: 'auto' }}
+									exit={{ opacity: 0, height: 0 }}
+									transition={{ duration: 0.2 }}
+									className='p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 group/item'>
+									<div className='flex justify-between items-center'>
+										<div className='flex gap-4 items-center cursor-pointer transition-all duration-200 group-hover/delete:opacity-50 group-hover/delete:blur-[1px]'>
+											{/* <Image
+												width={48}
+												height={48}
+												alt={card.title}
+												className='h-12 w-12 rounded-lg object-cover object-top'
+											/> */}
+											<div className='h-12 w-12 rounded-lg bg-gray-200 dark:bg-gray-700' />
+											<div>
+												<h3 className='font-medium text-neutral-800 dark:text-neutral-200'>
+													{card.title}
+												</h3>
+												<p className='text-sm text-neutral-600 dark:text-neutral-400'>
+													{card.description}
+												</p>
+											</div>
+										</div>
+										<button
+											onClick={e => {
+												e.stopPropagation();
+												handleDelete(card.title);
+											}}
+											className='p-2 hover:bg-red-400 dark:hover:bg-red-600 rounded-full transition-colors group/delete'>
+											<IconTrash className='h-5 w-5 text-neutral-500 group-hover/delete:text-red-100 transition-colors' />
+										</button>
 									</div>
-								</div>
-							</motion.div>
-						))}
+								</motion.div>
+							))}
+						</AnimatePresence>
+						{bookmarks.length === 0 && (
+							<div className='p-4 text-center text-neutral-500 dark:text-neutral-400'>
+								No bookmarks yet
+							</div>
+						)}
 					</ul>
 				</motion.div>
 			)}

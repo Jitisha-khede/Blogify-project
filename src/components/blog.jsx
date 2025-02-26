@@ -6,8 +6,11 @@ import { NumberTicker } from './ui/number-ticker';
 import {
 	IconMessage,
 	IconThumbUp,
+	IconThumbUpFilled,
 	IconThumbDown,
+	IconThumbDownFilled,
 	IconBookmark,
+	IconBookmarkFilled,
 	IconLink,
 } from '@tabler/icons-react';
 
@@ -16,15 +19,17 @@ import { useParams } from 'react-router-dom';
 import CommentsSection from './comment-section';
 import { fetchBlogById, fetchUserById } from '@/utils/api';
 
-
 export default function Blog() {
 	const { id } = useParams();
 	const [blog, setBlog] = useState(null);
-    const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(true);
 	const [isBookmarked, setIsBookmarked] = useState(false);
 	const [author, setAuthor] = useState(null);
-	// console.log(id); 
-	useEffect(()=>{
+	const [isLiked, setIsLiked] = useState(false);
+	const [isDisliked, setIsDisliked] = useState(false);
+	const commentsRef = useRef(null);
+	// console.log(id);
+	useEffect(() => {
 		const getBlog = async () => {
 			const response = await fetchBlogById(id);
 			console.log(response.data.blog);
@@ -33,7 +38,7 @@ export default function Blog() {
 		};
 
 		if (blog?.createdBy) {
-			console.log("Fetching author details...");
+			console.log('Fetching author details...');
 			getAuthorDetails(blog.createdBy);
 		}
 
@@ -42,26 +47,25 @@ export default function Blog() {
 
 	useEffect(() => {
 		if (blog?.createdBy) {
-			console.log("Fetching author details...");
+			console.log('Fetching author details...');
 			getAuthorDetails(blog.createdBy);
 		}
 	}, [blog]); // Run when `blog` updates
 
-	const getAuthorDetails = async (authorId) => {
+	const getAuthorDetails = async authorId => {
 		try {
 			const response = await fetchUserById(authorId);
-			console.log("Author API Response:", response);
+			console.log('Author API Response:', response);
 			setAuthor(response.data.user || null);
-			
 		} catch (error) {
-			console.error("Error fetching author:", error);
+			console.error('Error fetching author:', error);
 		}
 	};
 
 	if (loading) {
 		return <div>Loading blog...</div>;
 	}
-	if(!blog){
+	if (!blog) {
 		return <div>Blog not found</div>;
 	}
 	// console.log(blog)
@@ -72,122 +76,156 @@ export default function Blog() {
 			.writeText(window.location.href)
 			.then(() => alert('Link copied to clipboard!'))
 			.catch(err => console.error('Failed to copy:', err));
-	};	
+	};
+
+	const handleLikeClick = () => {
+		if (isDisliked) {
+			setIsDisliked(false);
+		}
+		setIsLiked(!isLiked);
+	};
+
+	const handleDislikeClick = () => {
+		if (isLiked) {
+			setIsLiked(false);
+		}
+		setIsDisliked(!isDisliked);
+	};
+
+	const scrollToComments = () => {
+		commentsRef.current?.scrollIntoView({ behavior: 'smooth' });
+	};
 
 	const imageUrl =
 		'https://images.unsplash.com/photo-1663765970236-f2acfde22237?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
-		
+
 	return (
 		<div className='relative min-h-screen w-full px-4 sm:px-6 lg:px-8 py-4 items-center justify-center bg-slate-100 dark:bg-gray-900 font-thin tracking-wide [word-spacing:0.1em]'>
-			
-				<div
-					// key={`content-${index}`}
-					className='mb-10 max-w-5xl mx-auto'>
-					<div className='text-base sm:text-sm lg:text-lg prose prose-sm dark:prose-invert w-full max-w-[85vw] mb-10 justify-items-center mx-auto '>
-						{/* Image Section*/}
-						<div className='relative mb-4'>
-							<p
-								className={twMerge(
-									'text-2xl sm:text-3xl lg:text-4xl w-full font-bold flex justify-self-center gap-4 mt-2 mb-10'
-								)}>
-								{blog.title}
-							</p>
-							{blog?.coverImageUrl && (
-								<>
-									<Image
-										src={blog.coverImageUrl										}
-										alt='blog thumbnail'
-										height='1000'
-										width='1000'
-										className='w-full max-w-[80vw] h-[200px] sm:h-[500px] lg:h-[700px] rounded-lg object-cover mx-auto'
-									/>
+			<div
+				// key={`content-${index}`}
+				className='mb-10 max-w-5xl mx-auto'>
+				<div className='text-base sm:text-sm lg:text-lg prose prose-sm dark:prose-invert w-full max-w-[85vw] mb-10 justify-items-center mx-auto '>
+					{/* Image Section*/}
+					<div className='relative mb-4'>
+						<p
+							className={twMerge(
+								'text-2xl sm:text-3xl lg:text-4xl w-full font-bold flex justify-self-center gap-4 mt-2 mb-10'
+							)}>
+							{blog.title}
+						</p>
+						{blog?.coverImageUrl && (
+							<>
+								<Image
+									src={blog.coverImageUrl}
+									alt='blog thumbnail'
+									height='1000'
+									width='1000'
+									className='w-full max-w-[80vw] h-[200px] sm:h-[500px] lg:h-[700px] rounded-lg object-cover mx-auto'
+								/>
 
-									{/* Below image content */}
-									<div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mt-2 mb-4'>
-										{/* Interaction buttons */}
-										<div className='flex flex-wrap items-center gap-2 w-full min-w-80 md:w-auto mt-1'>
-											<button className='flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1.5 sm:px-3'>
-												<IconThumbUp className='h-5 w-auto ' />
-												<span className=' ml-1'>
-													<NumberTicker
-														value={blog.upvotes.length}
-														className='whitespace-pre-wrap font-medium tracking-tighter '
-													/>
-												</span>
-											</button>
-											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-												<IconThumbDown className='h-5 w-auto ' />
+								{/* Below image content */}
+								<div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mt-2 mb-4'>
+									{/* Interaction buttons */}
+									<div className='flex flex-wrap items-center gap-2 w-full min-w-80 md:w-auto mt-1'>
+										<button
+											onClick={handleLikeClick}
+											className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2 
+										      ${isLiked ? 'text-red-400' : ''}`}>
+											{isLiked ? (
+												<IconThumbUpFilled className='h-5 w-auto' />
+											) : (
+												<IconThumbUp className='h-5 w-auto' />
+											)}
+											<span className='ml-1'>
 												<NumberTicker
-													value={blog.downvotes.length}
-													className='whitespace-pre-wrap font-medium tracking-tighter '
+													value={blog.upvotes.length}
+													className='whitespace-pre-wrap font-medium tracking-tighter'
 												/>
-											</button>
+											</span>
+										</button>
 
-											{/* <button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-												<IconMessage className='h-5 w-auto ' />
-												<NumberTicker
-													value={blog.stats.comment}
-													className='whitespace-pre-wrap font-medium tracking-tighter '
-												/>
-											</button> */}
+										<button
+											onClick={handleDislikeClick}
+											className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2
+										      ${isDisliked ? 'text-blue-400' : ''}`}>
+											{isDisliked ? (
+												<IconThumbDownFilled className='h-5 w-auto' />
+											) : (
+												<IconThumbDown className='h-5 w-auto' />
+											)}
+											<NumberTicker
+												value={blog.downvotes.length}
+												className='whitespace-pre-wrap font-medium tracking-tighter'
+											/>
+										</button>
 
-											<button
-												className={`flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2`}
-												onClick={() =>
-													setIsBookmarked(!isBookmarked)
-												}>
-												<IconBookmark
-													className={`h-5 w-auto ${
-														isBookmarked
-															? 'text-red-400 fill-current'
-															: ''
-													}`}
-												/>
-											</button>
+										<button
+											onClick={scrollToComments}
+											className='flex items-center dark:hover:bg-gray-700 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
+											<IconMessage className='h-5 w-auto' />
+											{/* <NumberTicker
+												value={blog.stats.comment}
+												className='whitespace-pre-wrap font-medium tracking-tighter'
+											/> */}
+										</button>
 
-											<button onClick={copyToClipboard} className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all p-1 sm:px-2'>
-												<IconLink className='h-6 w-auto text-black dark:text-white' />
-											</button>
-										</div>
+										<button
+											className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2
+										      ${isBookmarked ? 'text-red-400' : ''}`}
+											onClick={() => setIsBookmarked(!isBookmarked)}>
+											{isBookmarked ? (
+												<IconBookmarkFilled className='h-5 w-auto' />
+											) : (
+												<IconBookmark className='h-5 w-auto' />
+											)}
+										</button>
 
-										{/* Tags */}
-										<div className='flex flex-wrap gap-2 w-full md:w-auto justify-start md:justify-end'>
-											{blog.tags.map((tag, index) => (
-												<h2
-													key={index}
-													className='bg-red-600 dark:bg-red text-gray-900 dark:text-white rounded-full text-xs sm:text-sm w-fit px-3 py-1 backdrop-blur-3xl bg-opacity-70'>
-													{tag}
-												</h2>
-											))}
-										</div>
+										<button
+											onClick={copyToClipboard}
+											className='flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2'>
+											<IconLink className='h-6 w-auto text-black dark:text-white' />
+										</button>
 									</div>
-								</>
-							)}
-						</div>
+									{/* Tags */}
+									<div className='flex flex-wrap gap-2 w-full md:w-auto justify-start md:justify-end'>
+										{blog.tags.map((tag, index) => (
+											<h2
+												key={index}
+												className='bg-red-600 dark:bg-red text-gray-900 dark:text-white rounded-full text-xs sm:text-sm w-fit px-3 py-1 backdrop-blur-3xl bg-opacity-70'>
+												{tag}
+											</h2>
+										))}
+									</div>
+								</div>
+							</>
+						)}
+					</div>
 
-						{/* Content */}
-						{blog.body}
+					{/* Content */}
+					{blog.body}
 
-						{/*About Author Section */}
-						{author && (
-							<div className='max-w-5xl justify-center items-center flex gap-8 mx-auto mt-20'>
+					{/*About Author Section */}
+					{author && (
+						<div className='max-w-5xl justify-center items-center flex gap-8 mx-auto mt-20'>
 							<Image
-								src={author.profileImage}								
+								src={author.profileImage}
 								alt={blog.createdBy}
 								width={32}
 								height={32}
 								className='h-32 w-32 rounded-full'
 							/>
 							<div className='flex flex-col'>
-								<p className='font-medium text-base'>{author.fullName}</p>
-
+								<p className='font-medium text-base'>
+									{author.fullName}
+								</p>
 							</div>
 						</div>
-						)}
-						
-					</div>
+					)}
+				</div>
+				<div ref={commentsRef}>
 					<CommentsSection />
 				</div>
+			</div>
 			)
 		</div>
 	);

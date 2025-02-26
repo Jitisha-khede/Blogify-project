@@ -4,7 +4,7 @@ import { SearchBar } from './ui/searchbar';
 import { useTheme } from './ui/useTheme';
 import { Link } from 'react-router-dom';
 import {
-	IconBookmark,
+	IconBookmarks,
 	IconHome,
 	IconPencil,
 	IconArticle,
@@ -38,7 +38,7 @@ export const NavBar = () => {
 		},
 		{
 			title: 'Bookmarks',
-			icon: IconBookmark,
+			icon: IconBookmarks,
 			onClick: e => {
 				setIsBookmarksOpen(prev => !prev);
 			},
@@ -117,6 +117,7 @@ export const NavBar = () => {
 				<BookmarksDropdown
 					isOpen={isBookmarksOpen}
 					onClose={() => setIsBookmarksOpen(false)}
+					className='md:absolute md:right-0 md:top-16 fixed inset-x-0 top-16 md:w-80 w-full'
 				/>
 			</div>
 
@@ -131,34 +132,49 @@ export const NavBar = () => {
 					${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
 					{/* Mobile Search Bar */}
 
+					{/* Mobile Menu Links */}
 					<div className='flex flex-col p-4 space-y-4'>
-						{links.map(link => (
-							<Link
-								key={link.title}
-								to={link.to}
-								className='flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'
-								onClick={() => setIsMenuOpen(false)}>
-								<link.icon className='w-5 h-5' />
-								<span>{link.title}</span>
-							</Link>
-						))}
-						<div className='flex items-center justify-between pt-4 border-t dark:border-gray-800'>
-							<button
-								onClick={toggleTheme}
-								className='flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'>
-								{theme === 'dark' ? (
-									<>
-										<IconSun className='w-5 h-5' />
-										<span>Light Mode</span>
-									</>
-								) : (
-									<>
-										<IconMoon className='w-5 h-5' />
-										<span>Dark Mode</span>
-									</>
-								)}
-							</button>
-						</div>
+						{links.map(link =>
+							link.to ? (
+								<Link
+									key={link.title}
+									to={link.to}
+									className='flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'
+									onClick={() => setIsMenuOpen(false)}>
+									<link.icon className='w-5 h-5' />
+									<span>{link.title}</span>
+								</Link>
+							) : (
+								<button
+									key={link.title}
+									onClick={e => {
+										link.onClick(e);
+										setIsMenuOpen(false);
+									}}
+									className='flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'>
+									<link.icon className='w-5 h-5' />
+									<span>{link.title}</span>
+								</button>
+							)
+						)}
+					</div>
+
+					<div className='flex items-center justify-between pt-4 border-t dark:border-gray-800'>
+						<button
+							onClick={toggleTheme}
+							className='flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'>
+							{theme === 'dark' ? (
+								<>
+									<IconSun className='w-5 h-5' />
+									<span>Light Mode</span>
+								</>
+							) : (
+								<>
+									<IconMoon className='w-5 h-5' />
+									<span>Dark Mode</span>
+								</>
+							)}
+						</button>
 					</div>
 				</div>
 			)}
