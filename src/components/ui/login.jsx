@@ -9,7 +9,7 @@ import {
 	IconBrandOnlyfans,
 } from '@tabler/icons-react';
 
-export default function LoginForm() {
+export default function LoginForm({ onToggle }) {
 	const [loginType, setLoginType] = useState('email'); // 'email' or 'username'
 	const [authType, setAuthType] = useState('password'); // 'password' or 'otp'
 	const [showOTP, setShowOTP] = useState(false);
@@ -40,24 +40,14 @@ export default function LoginForm() {
 					<div className='flex flex-row justify-start items-center gap-2'>
 						<Label
 							htmlFor='username'
-							className={cn(
-								'cursor-pointer transition-colors',
-								loginType === 'username'
-									? 'text-blue-500'
-									: 'text-neutral-600 hover:text-blue-500'
-							)}
+							className={cn('cursor-pointer transition-colors')}
 							onClick={() => setLoginType('username')}>
 							Username
 						</Label>
 						<span>/</span>
 						<Label
 							htmlFor='email'
-							className={cn(
-								'cursor-pointer transition-colors',
-								loginType === 'email'
-									? 'text-red-400'
-									: 'text-neutral-600 hover:text-red-400'
-							)}
+							className={cn('cursor-pointer transition-colors')}
 							onClick={() => setLoginType('email')}>
 							Email
 						</Label>
@@ -81,81 +71,47 @@ export default function LoginForm() {
 					<div className='flex flex-row justify-start items-center gap-2'>
 						<Label
 							htmlFor='password'
-							className={cn(
-								'cursor-pointer transition-colors',
-								authType === 'password'
-									? 'text-red-400'
-									: 'text-neutral-600 hover:text-red-400'
-							)}
+							className={cn('cursor-pointer transition-colors')}
 							onClick={() => setAuthType('password')}>
 							Password
 						</Label>
-						{loginType === 'email' && (
-							<>
-								<span>/</span>
-								<Label
-									htmlFor='otp'
-									className={cn(
-										'cursor-pointer transition-colors',
-										authType === 'otp'
-											? 'text-red-400'
-											: 'text-neutral-600 hover:text-red-400'
-									)}
-									onClick={() => setAuthType('otp')}>
-									OTP
-								</Label>
-							</>
-						)}
 					</div>
 
-					{authType === 'password' ? (
-						<Input
-							id='password'
-							placeholder='••••••••'
-							type='password'
-							autoComplete='current-password'
-						/>
-					) : (
-						<div className='flex flex-col space-y-2'>
-							<div className=''>
-								<Input
-									id='otp'
-									placeholder='Enter 6-digit OTP'
-									type='text'
-									maxLength={6}
-									pattern='[0-9]*'
-									inputMode='numeric'
-								/>
-								<button
-									onClick={handleSendOTP}
-									type='button'
-									className={cn(
-										'px-4 py-2 mt-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap',
-										isOTPSent
-											? 'bg-blue-500 text-white hover:bg-blue-600'
-											: 'bg-red-400 text-white hover:bg-red-500'
-									)}>
-									{isOTPSent ? 'Resend OTP' : 'Send OTP'}
-								</button>
-							</div>
-							{isOTPSent && (
-								<p className='text-xs text-neutral-500 dark:text-neutral-400'>
-									A 6-digit code has been sent to your email
-								</p>
-							)}
-						</div>
-					)}
+					<Input
+						id='password'
+						placeholder='••••••••'
+						type='password'
+						autoComplete='current-password'
+					/>
 				</LabelInputContainer>
 
 				<button
 					className='bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]'
 					type='submit'>
-					Login &rarr;
+					Login
 					<BottomGradient />
 				</button>
-				<p className='text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300'>
-					Not a blogifier? Sign up
-				</p>
+				<div className='w-full flex justify-between'>
+					<p className='justify-start text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300'>
+						Not a blogifier?{' '}
+						<span
+							className='cursor-pointer hover:underline text-blue-600 dark:text-blue-400'
+							onClick={onToggle}
+							role='button'
+							tabIndex={0}>
+							Sign up
+						</span>
+					</p>
+					<p className='justify-end text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300'>
+						<span
+							className='cursor-pointer hover:underline text-red-500 '
+							onClick={onToggle}
+							role='button'
+							tabIndex={0}>
+							Forgot password?
+						</span>
+					</p>
+				</div>
 
 				<div className='bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full' />
 
