@@ -6,12 +6,19 @@ import { cn } from '@/lib/utils';
 import { FileUpload } from './file-upload';
 
 export default function PersonalInfo({ onToggle }) {
-	const [showOTP, setShowOTP] = useState(false);
-	const [isOTPSent, setIsOTPSent] = useState(false);
 	const [files, setFiles] = useState([]);
+	const [preview, setPreview] = useState(null);
 
 	const handleFileUpload = files => {
 		setFiles(files);
+		if (files.length > 0) {
+			const file = files[0];
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setPreview(reader.result);
+			};
+			reader.readAsDataURL(file);
+		}
 	};
 
 	const handleSubmit = e => {
@@ -20,8 +27,41 @@ export default function PersonalInfo({ onToggle }) {
 	};
 
 	return (
-		<div className='h-full w-full max-w-5xl mx-auto md:px-20 rounded-2xl md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-gray-800'>
-			<form className='flex-1  my-8' onSubmit={handleSubmit}>
+		<div className='h-full w-full max-w-2xl sm:mt-8 md:mt-16 mx-auto md:px-20 rounded-2xl md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-gray-800'>
+			{/* Profile Header Section */}
+			<div className='flex flex-col items-center mb-8'>
+				<div className='relative w-20 md:w-32 h-20 md:h-32 mb-4'>
+					{preview ? (
+						<img
+							src={preview}
+							alt='Profile Preview'
+							className='w-full h-full rounded-full object-cover border-4 border-blue-500'
+						/>
+					) : (
+						<div className='w-full h-full rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center'>
+							<span className='text-4xl text-gray-400'>👤</span>
+						</div>
+					)}
+					<div className='absolute bottom-0 right-0'>
+						<div className='relative'>
+							<input
+								type='file'
+								className='hidden'
+								id='profile-upload'
+								onChange={e => handleFileUpload(e.target.files)}
+								accept='image/*'
+							/>
+							<label
+								htmlFor='profile-upload'
+								className='bg-blue-100 hover:bg-blue-200 text-white rounded-full p-2 cursor-pointer shadow-lg'>
+								📷
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<form className='flex-1' onSubmit={handleSubmit}>
 				<LabelInputContainer className='mb-4'>
 					<Label htmlFor='username'>Username</Label>
 					<Input
@@ -46,31 +86,22 @@ export default function PersonalInfo({ onToggle }) {
 					/>
 				</LabelInputContainer>
 
-				<LabelInputContainer className='mb-4'>
+				<LabelInputContainer className='mb-6'>
 					<Label htmlFor='bio'>Bio</Label>
 					<textarea
 						id='bio'
-						placeholder='projectmayhem@fc.com'
-						type='text'
-						rows={10}
-						className='flex h-10 w-full border-none bg-gray-50 dark:bg-zinc-800 text-black dark:text-white shadow-input rounded-md px-3 py-2 focus-visible:outline-none focus-visible:ring-[2px]  focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600'
+						placeholder='Tell us about yourself...'
+						rows={2}
+						className='w-full p-3 rounded-md border-none bg-gray-50 dark:bg-zinc-800 text-black dark:text-white shadow-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600'
 					/>
-				</LabelInputContainer>
-				<LabelInputContainer className='mb-4'>
-					<Label htmlFor='bio'>Profile Image</Label>
-					<div className='border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 flex flex-col items-center'>
-						<FileUpload onChange={handleFileUpload} />
-					</div>
 				</LabelInputContainer>
 
 				<button
 					className='bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]'
 					type='submit'>
-					Submit
+					Save Changes
 					<BottomGradient />
 				</button>
-
-				<div className='bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full' />
 			</form>
 		</div>
 	);
