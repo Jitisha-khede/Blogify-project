@@ -8,23 +8,41 @@ import {
 	IconBrandGoogle,
 	IconBrandOnlyfans,
 } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
+import { loginUser } from '@/utils/api';
 
 export default function LoginForm({ onToggle }) {
-	const [loginType, setLoginType] = useState('email'); // 'email' or 'username'
-	const [authType, setAuthType] = useState('password'); // 'password' or 'otp'
-	const [showOTP, setShowOTP] = useState(false);
-	const [isOTPSent, setIsOTPSent] = useState(false);
+	const navigate = useNavigate();
+	const [error, setError] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const [formData, setFormData] = useState({
+		login: '',
+		password: '',
+	});
 
-	const handleSubmit = e => {
-		e.preventDefault();
-		console.log('Form submitted');
+	const handleChange = e => {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
-
-	const handleSendOTP = e => {
+	
+	const handleSubmit = async e => {
+		console.log('form submitted!')
 		e.preventDefault();
-		setIsOTPSent(true);
-		setShowOTP(true);
-		// Add OTP sending logic here
+		setLoading(true);
+		setError(null);
+
+		const formDataToSend = { login: formData.login, password: formData.password }; 
+		console.log(formDataToSend);
+
+		try {
+			const response = await loginUser(formDataToSend);
+			console.log(response);
+			setSuccess(response.message);
+			navigate('/blogs');
+		} catch (error) {
+			setError(error.message);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -37,37 +55,35 @@ export default function LoginForm({ onToggle }) {
 			</p>
 			<form className='my-8' onSubmit={handleSubmit}>
 				<LabelInputContainer className='mb-4'>
-					<div className='flex flex-row justify-start items-center gap-2'>
-						<Label
-							htmlFor='username'
-							className={cn('cursor-pointer transition-colors')}
-							onClick={() => setLoginType('username')}>
-							Username
-						</Label>
-						<span>/</span>
-						<Label
-							htmlFor='email'
-							className={cn('cursor-pointer transition-colors')}
-							onClick={() => setLoginType('email')}>
-							Email
-						</Label>
-					</div>
-
+				<div className='flex flex-col space-y-2'>
+					<Label htmlFor='login'>Email or Username</Label>
 					<Input
-						id={loginType === 'email' ? 'email' : 'username'}
-						placeholder={
-							loginType === 'email'
-								? 'Enter your email'
-								: 'Enter your username'
-						}
-						type={loginType === 'email' ? 'email' : 'text'}
-						autoComplete={
-							loginType === 'email' ? 'email' : 'username'
-						}
+						id='login'
+						name='login'
+						type='text'
+						placeholder='Enter your email or username'
+						value={formData.login}
+						onChange={handleChange}
+						required
 					/>
+				</div>
+
+				{/* Password Input */}
+				<div className='flex flex-col space-y-2'>
+					<Label htmlFor='password'>Password</Label>
+					<Input
+						id='password'
+						name='password'
+						type='password'
+						placeholder='••••••••'
+						value={formData.password}
+						onChange={handleChange}
+						required
+					/>
+				</div>
 				</LabelInputContainer>
 
-				<LabelInputContainer className='mb-8'>
+				{/* <LabelInputContainer className='mb-8'>
 					<div className='flex flex-row justify-start items-center gap-2'>
 						<Label
 							htmlFor='password'
@@ -83,7 +99,7 @@ export default function LoginForm({ onToggle }) {
 						type='password'
 						autoComplete='current-password'
 					/>
-				</LabelInputContainer>
+				</LabelInputContainer> */}
 
 				<button
 					className='bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]'

@@ -8,14 +8,60 @@ import {
 	IconBrandGoogle,
 	IconBrandOnlyfans,
 } from '@tabler/icons-react';
+import { signupUser } from '@/utils/api';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function SignupForm({ onToggle }) {
+	const navigate = useNavigate(); 
 	const [showOTP, setShowOTP] = useState(false);
 	const [isOTPSent, setIsOTPSent] = useState(false);
+	const [formData, setFormData] = useState({
+		userName: '',
+		fullName: '',
+		email: '',
+		password: '',
+		profileImage: null,
+	});
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(null);
+	const [success, setSuccess] = useState(null);
+	const API_BASE_URL =process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-	const handleSubmit = e => {
+	const handleChange = (e) => {
+		const { name, value } = e.target;
+		setFormData({ ...formData, [name]: value });
+	};
+
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log('Form submitted');
+		setLoading(true);
+		setError(null);
+		setSuccess(null);
+		console.log(formData);
+		const formDataToSend = new FormData();
+		formDataToSend.append('userName', formData.userName);
+		formDataToSend.append('fullName', formData.fullName);
+		formDataToSend.append('email', formData.email);
+		formDataToSend.append('password', formData.password);
+
+		try {
+			console.log('Sending form data:', formDataToSend);
+			const response = await axios.post(`${API_BASE_URL}/api/user/signup`, formDataToSend, {
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+			console.log(response.data.message);
+			setSuccess(response.data.message);
+			setTimeout(() => {
+				navigate('/login'); 
+			}, 1000);
+		} catch (error) {
+			setError(error.message);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const handleSendOTP = e => {
@@ -39,14 +85,20 @@ export default function SignupForm({ onToggle }) {
 					<Label htmlFor='username'>Username</Label>
 					<Input
 						id='username'
+						name="userName"
 						placeholder='your username'
 						type='text'
+						onChange={handleChange}
 					/>
 				</LabelInputContainer>
 
 				<LabelInputContainer className='mb-4'>
 					<Label htmlFor='name'>Full name</Label>
-					<Input id='name' placeholder='Tyler Burden' type='text' />
+					<Input id='name' 
+					placeholder='Tyler Burden' 
+					type='text'
+					name = 'fullName'
+					onChange={handleChange}/>
 				</LabelInputContainer>
 
 				<LabelInputContainer className='mb-4'>
@@ -55,16 +107,19 @@ export default function SignupForm({ onToggle }) {
 						id='email'
 						placeholder='projectmayhem@fc.com'
 						type='email'
+						name = 'email'
+						onChange={handleChange}
 						autoComplete='email'
 					/>
 				</LabelInputContainer>
-				<div className='flex flex-col space-y-2'>
+				{/* <div className='flex flex-col space-y-2'>
 					<div className=''>
 						<Input
 							id='otp'
 							placeholder='Enter 6-digit OTP'
 							type='text'
 							maxLength={6}
+							onChange={handleChange}
 							pattern='[0-9]*'
 							inputMode='numeric'
 						/>
@@ -85,11 +140,13 @@ export default function SignupForm({ onToggle }) {
 							A 6-digit code has been sent to your email
 						</p>
 					)}
-				</div>
+				</div> */}
 				<LabelInputContainer className='mb-4'>
 					<Label htmlFor='password'>Password</Label>
 					<Input
 						id='password'
+						name='password'
+						onChange={handleChange}
 						placeholder='••••••••'
 						type='password'
 						autoComplete='new-password'

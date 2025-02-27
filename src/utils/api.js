@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const API_URL =
 	process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
@@ -76,3 +78,24 @@ export const fetchComments = async (blogId) => {
 		return [];
 	}
 }
+
+export const signupUser = async (formData) => {
+    try {
+        const response = await axios.post(`${API_URL}/api/user/signup`, formData);
+		console.log(response);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: 'Something went wrong' };
+    }
+};
+
+export const loginUser = async (formData) => {
+    try {
+        const response = await axios.post(`${API_URL}/api/user/login`, formData, {
+            withCredentials: true // Ensures cookies are sent & stored
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: 'Something went wrong' };
+    }
+};
