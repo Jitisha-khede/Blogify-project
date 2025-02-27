@@ -27,40 +27,7 @@ export default function PersonalInfo({ onToggle }) {
 	};
 
 	return (
-		<div className='h-full w-full max-w-2xl sm:mt-8 md:mt-16 mx-auto md:px-20 rounded-2xl md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-gray-800'>
-			{/* Profile Header Section */}
-			<div className='flex flex-col items-center mb-8'>
-				<div className='relative w-20 md:w-32 h-20 md:h-32 mb-4'>
-					{preview ? (
-						<img
-							src={preview}
-							alt='Profile Preview'
-							className='w-full h-full rounded-full object-cover border-4 border-blue-500'
-						/>
-					) : (
-						<div className='w-full h-full rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center'>
-							<span className='text-4xl text-gray-400'>👤</span>
-						</div>
-					)}
-					<div className='absolute bottom-0 right-0'>
-						<div className='relative'>
-							<input
-								type='file'
-								className='hidden'
-								id='profile-upload'
-								onChange={e => handleFileUpload(e.target.files)}
-								accept='image/*'
-							/>
-							<label
-								htmlFor='profile-upload'
-								className='bg-blue-100 hover:bg-blue-200 text-white rounded-full p-2 cursor-pointer shadow-lg'>
-								📷
-							</label>
-						</div>
-					</div>
-				</div>
-			</div>
-
+		<div className='h-full w-full max-w-2xl mt-4 md:mt-16 mx-auto md:px-20 rounded-2xl md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-gray-800'>
 			<form className='flex-1' onSubmit={handleSubmit}>
 				<LabelInputContainer className='mb-4'>
 					<Label htmlFor='username'>Username</Label>

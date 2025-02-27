@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Add useEffect import
 import { Camera, PenSquare, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Label } from './label';
 import { Input } from './input';
 import { cn } from '@/lib/utils';
 import { IconPencil } from '@tabler/icons-react';
+import PersonalInfo from './personal-info-update';
 
 const Profile = ({ user }) => {
 	const [imageHover, setImageHover] = useState(false);
@@ -13,6 +14,22 @@ const Profile = ({ user }) => {
 	const [isEditing, setIsEditing] = useState(false);
 
 	const navigate = useNavigate();
+
+	// Add this effect to control body scroll
+	useEffect(() => {
+		if (isEditing) {
+			// Disable scrolling when modal is open
+			document.body.style.overflow = 'hidden';
+		} else {
+			// Re-enable scrolling when modal is closed
+			document.body.style.overflow = 'auto';
+		}
+
+		// Cleanup function to ensure scrolling is re-enabled when component unmounts
+		return () => {
+			document.body.style.overflow = 'auto';
+		};
+	}, [isEditing]);
 
 	const handleFileUpload = files => {
 		setFiles(files);
@@ -31,10 +48,10 @@ const Profile = ({ user }) => {
 	};
 
 	return (
-		<div className='container mx-auto px-4 py-8 mt-16'>
+		<div className='container mx-auto px-4 sm:py-8 sm:mt-16'>
 			<div className='max-w-5xl mx-auto bg-card dark:bg-gray-800 rounded-lg shadow-lg p-6'>
 				{/* Profile Photo Section */}
-				<div className='relative w-32 h-32 mx-auto'>
+				<div className='relative w-16 sm:w-32 h-16 sm:h-32 mx-auto'>
 					{preview ? (
 						<img
 							src={preview}
@@ -57,7 +74,7 @@ const Profile = ({ user }) => {
 							/>
 							<label
 								htmlFor='profile-upload'
-								className='bg-primary hover:bg-primary/90 text-primary-foreground rounded-full p-2 cursor-pointer shadow-lg transition-all duration-200 hover:scale-110 active:scale-95 flex items-center justify-center'>
+								className='bg-primary hover:bg-primary/90 text-primary-foreground rounded-full sm:p-2 cursor-pointer shadow-lg transition-all duration-200 hover:scale-110 active:scale-95 flex items-center justify-center'>
 								<IconPencil className='w-4 h-4' />
 							</label>
 						</div>
@@ -67,20 +84,20 @@ const Profile = ({ user }) => {
 				{/* Edit Profile Button */}
 				<button
 					onClick={() => setIsEditing(!isEditing)}
-					className='flex items-center gap-2 mx-auto mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors'>
+					className='flex items-center h-8 sm:h-full gap-2 mx-auto mt-2 sm:mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors'>
 					<PenSquare className='w-4 h-4' />
 					Edit Profile
 				</button>
 
-				<div className='bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full' />
+				<div className='bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-4 sm:my-8 h-[1px] w-full' />
 
 				{/* User Details Section */}
-				<div className='mt-8 flex justify-center'>
+				<div className='mt-4 flex justify-center'>
 					<div className='w-full max-w-2xl'>
 						<div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
 							{/* Left Column */}
 							<div className='mx-0 lg:mx-32 space-y-4'>
-								<div className='space-y-2'>
+								<div className='sm:space-y-2'>
 									<label className='text-sm font-medium text-muted-foreground'>
 										Full Name
 									</label>
@@ -88,7 +105,7 @@ const Profile = ({ user }) => {
 										{user?.name || 'John Doe'}
 									</p>
 								</div>
-								<div className='space-y-2'>
+								<div className='sm:space-y-2'>
 									<label className='text-sm font-medium text-muted-foreground'>
 										Email
 									</label>
@@ -100,7 +117,7 @@ const Profile = ({ user }) => {
 
 							{/* Right Column */}
 							<div className='mx-0 lg:mx-32 space-y-4'>
-								<div className='space-y-2'>
+								<div className='sm:space-y-2'>
 									<label className='text-sm font-medium text-muted-foreground'>
 										Username
 									</label>
@@ -108,7 +125,7 @@ const Profile = ({ user }) => {
 										{user?.username || '@johndoe'}
 									</p>
 								</div>
-								<div className='space-y-2'>
+								<div className='sm:space-y-2'>
 									<label className='text-sm font-medium text-muted-foreground'>
 										Joined
 									</label>
@@ -120,7 +137,7 @@ const Profile = ({ user }) => {
 						</div>
 
 						{/* Bio Section - Full Width */}
-						<div className='mt-6 space-y-2 ml-0 lg:ml-32'>
+						<div className='mt-4 sm:mt-6 space-y-2 ml-0 lg:ml-32'>
 							<label className='text-sm font-medium text-muted-foreground'>
 								Bio
 							</label>
@@ -135,7 +152,7 @@ const Profile = ({ user }) => {
 				{/* Edit Profile Overlay */}
 				{isEditing && (
 					<div
-						className='fixed mt-16 inset-0 z-50 overflow-y-auto bg-black/30 backdrop-blur-sm'
+						className='fixed mt-16 inset-0 z-50 bg-black/30 backdrop-blur-sm'
 						aria-labelledby='modal-title'
 						role='dialog'
 						aria-modal='true'
@@ -150,9 +167,9 @@ const Profile = ({ user }) => {
 
 							{/* Modal panel */}
 							<div
-								className='inline-block w-full max-w-2xl p-6 my-8 text-left align-middle bg-card dark:bg-gray-800 rounded-lg shadow-xl transform transition-all'
+								className='inline-block w-full max-w-2xl p-6 my-8 text-left overflow-y-hidden align-middle bg-card dark:bg-gray-800 rounded-lg shadow-xl transform transition-all'
 								onClick={e => e.stopPropagation()}>
-								<div className='absolute top-4 right-4'>
+								<div className='absolute top-1 sm:top-4 right-2 sm:right-4'>
 									<button
 										onClick={() => setIsEditing(false)}
 										className='text-gray-400 hover:text-gray-500 focus:outline-none'>
@@ -160,7 +177,7 @@ const Profile = ({ user }) => {
 									</button>
 								</div>
 
-								<div className='mt-4'>
+								{/* <div className='mt-4'>
 									<form className='space-y-4' onSubmit={handleSubmit}>
 										<LabelInputContainer>
 											<Label htmlFor='username'>Username</Label>
@@ -219,7 +236,8 @@ const Profile = ({ user }) => {
 											</button>
 										</div>
 									</form>
-								</div>
+								</div> */}
+								<PersonalInfo user={user} />
 							</div>
 						</div>
 					</div>

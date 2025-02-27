@@ -145,14 +145,7 @@ export const NavBar = () => {
 											className='w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-800'>
 											Show Profile
 										</button>
-										<button
-											onClick={() => {
-												setIsProfileOpen(false);
-												navigate('/edit-profile');
-											}}
-											className='w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-800'>
-											Edit Profile
-										</button>
+
 										<div className='border-t dark:border-gray-800 my-1'></div>
 										<button
 											onClick={() => {

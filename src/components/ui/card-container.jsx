@@ -15,7 +15,7 @@ import {
 	IconLink,
 } from '@tabler/icons-react';
 
-export const HoverEffect = ({ items, className }) => {
+export const HoverEffect = ({ items, className, filterOpen }) => {
 	let [hoveredIndex, setHoveredIndex] = useState(null);
 	const [isBookmarked, setIsBookmarked] = useState(false);
 	const copyToClipboard = () => {
@@ -28,14 +28,18 @@ export const HoverEffect = ({ items, className }) => {
 	return (
 		<div
 			className={cn(
-				'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ',
+				'grid grid-cols-1',
+				// Adjust columns based on filter state and screen size
+				filterOpen
+					? 'md:grid-cols-1 lg:grid-cols-2'
+					: 'md:grid-cols-2 lg:grid-cols-3',
 				className
 			)}>
 			{items.map((item, idx) => (
 				<Link
 					href={item?.link}
 					key={item?.link}
-					className='relative group  block h-full w-full mx-4'
+					className='relative group block h-full w-full'
 					onMouseEnter={() => setHoveredIndex(idx)}
 					onMouseLeave={() => setHoveredIndex(null)}>
 					<CardContainer
@@ -93,7 +97,11 @@ export const HoverEffect = ({ items, className }) => {
 
 											<button
 												className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2
-										      ${isBookmarked ? 'text-red-400' : ''}`}
+                                              ${
+																								isBookmarked
+																									? 'text-red-400'
+																									: ''
+																							}`}
 												onClick={() =>
 													setIsBookmarked(!isBookmarked)
 												}>
