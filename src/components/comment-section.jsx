@@ -14,39 +14,40 @@ import { fetchComments } from '@/utils/api';
 
 const CommentsSection = ({ blogId }) => {
 	const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState("");
-    const [loading, setLoading] = useState(false);
+	const [newComment, setNewComment] = useState('');
+	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		const getComments = async () => {
 			const commentsData = await fetchComments(blogId);
-			console.log("comments data: ", commentsData);
-	
+			console.log('comments data: ', commentsData);
+
 			// Create a map of comments by id
 			const commentMap = {};
 			commentsData.forEach(comment => {
 				commentMap[comment.id] = { ...comment, replies: [] };
-
 			});
-	
+
 			// Populate replies
 			const structuredComments = [];
 			commentsData.forEach(comment => {
 				if (comment.parentComment) {
 					// If the comment has a parent, add it as a reply
 					if (commentMap[comment.parentComment]) {
-						commentMap[comment.parentComment].replies.push(commentMap[comment.id]);
+						commentMap[comment.parentComment].replies.push(
+							commentMap[comment.id]
+						);
 					}
 				} else {
 					// If no parent, it's a top-level comment
 					structuredComments.push(commentMap[comment.id]);
 				}
 			});
-	
+
 			setComments(structuredComments);
-			console.log("structured comments: ", structuredComments);
+			console.log('structured comments: ', structuredComments);
 		};
-	
+
 		getComments();
 	}, [blogId]);
 
@@ -56,33 +57,33 @@ const CommentsSection = ({ blogId }) => {
 		avatar: '/api/placeholder/32/32',
 	};
 
-		// const [comments, setComments] = useState([
-		// 	{
-		// 		id: 1,
-		// 		userId: 'user2',
-		// 		username: 'sarah_smith',
-		// 		avatar: '/api/placeholder/32/32',
-		// 		text: 'This is amazing! 🎉',
-		// 		likes: 24,
-		// 		isLiked: false,
-		// 		timestamp: '2h',
-		// 		replies: [
-		// 			{
-		// 				id: 101,
-		// 				userId: 'user3',
-		// 				username: 'mike_brown',
-		// 				avatar: '/api/placeholder/32/32',
-		// 				text: 'Totally agree!',
-		// 				likes: 5,
-		// 				isLiked: false,
-		// 				timestamp: '1h',
-		// 				replies: [],
-		// 				replyToUsername: 'sarah_smith', // Adding this to track who this reply is for
-		// 			},
-		// 		],
-		// 		showReplies: true, // Add this to track if replies are shown
-		// 	},
-		// ]);
+	// const [comments, setComments] = useState([
+	// 	{
+	// 		id: 1,
+	// 		userId: 'user2',
+	// 		username: 'sarah_smith',
+	// 		avatar: '/api/placeholder/32/32',
+	// 		text: 'This is amazing! 🎉',
+	// 		likes: 24,
+	// 		isLiked: false,
+	// 		timestamp: '2h',
+	// 		replies: [
+	// 			{
+	// 				id: 101,
+	// 				userId: 'user3',
+	// 				username: 'mike_brown',
+	// 				avatar: '/api/placeholder/32/32',
+	// 				text: 'Totally agree!',
+	// 				likes: 5,
+	// 				isLiked: false,
+	// 				timestamp: '1h',
+	// 				replies: [],
+	// 				replyToUsername: 'sarah_smith', // Adding this to track who this reply is for
+	// 			},
+	// 		],
+	// 		showReplies: true, // Add this to track if replies are shown
+	// 	},
+	// ]);
 
 	// const [newComment, setNewComment] = useState('');
 	const [replyText, setReplyText] = useState('');
