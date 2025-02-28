@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import { NumberTicker } from './ui/number-ticker';
@@ -14,10 +14,11 @@ import {
 	IconLink,
 } from '@tabler/icons-react';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import CommentsSection from './comment-section';
 import { fetchBlogById, fetchUserById } from '@/utils/api';
+import AuthModal from './ui/auth-modal';
 
 export default function Blog() {
 	const { id } = useParams();
@@ -27,8 +28,26 @@ export default function Blog() {
 	const [author, setAuthor] = useState(null);
 	const [isLiked, setIsLiked] = useState(false);
 	const [isDisliked, setIsDisliked] = useState(false);
+	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+	const [showCopyMessage, setShowCopyMessage] = useState(false);
 	const commentsRef = useRef(null);
-	// console.log(id);
+
+	// Check if user is authenticated
+	const isAuthenticated = () => {
+		// Check for user token in localStorage or context
+		return localStorage.getItem('token') !== null;
+	};
+
+	// Wrapper function for interaction that requires authentication
+	const requireAuth = callback => {
+		if (isAuthenticated()) {
+			return callback();
+		} else {
+			setIsAuthModalOpen(true);
+			return null;
+		}
+	};
+
 	useEffect(() => {
 		const getBlog = async () => {
 			const response = await fetchBlogById(id);
@@ -74,26 +93,46 @@ export default function Blog() {
 	const copyToClipboard = () => {
 		navigator.clipboard
 			.writeText(window.location.href)
-			.then(() => alert('Link copied to clipboard!'))
+			.then(() => {
+				setShowCopyMessage(true);
+				setTimeout(() => {
+					setShowCopyMessage(false);
+				}, 1000); // Hide after 1 seconds
+			})
 			.catch(err => console.error('Failed to copy:', err));
 	};
 
 	const handleLikeClick = () => {
-		if (isDisliked) {
-			setIsDisliked(false);
-		}
-		setIsLiked(!isLiked);
+		requireAuth(() => {
+			if (isDisliked) {
+				setIsDisliked(false);
+			}
+			setIsLiked(!isLiked);
+		});
 	};
 
 	const handleDislikeClick = () => {
-		if (isLiked) {
-			setIsLiked(false);
-		}
-		setIsDisliked(!isDisliked);
+		requireAuth(() => {
+			if (isLiked) {
+				setIsLiked(false);
+			}
+			setIsDisliked(!isDisliked);
+		});
+	};
+
+	const handleBookmarkClick = () => {
+		requireAuth(() => {
+			setIsBookmarked(!isBookmarked);
+		});
 	};
 
 	const scrollToComments = () => {
-		commentsRef.current?.scrollIntoView({ behavior: 'smooth' });
+		// If user isn't authenticated, show login modal instead of scrolling
+		if (!isAuthenticated()) {
+			setIsAuthModalOpen(true);
+		} else {
+			commentsRef.current?.scrollIntoView({ behavior: 'smooth' });
+		}
 	};
 
 	const imageUrl =
@@ -101,6 +140,37 @@ export default function Blog() {
 
 	return (
 		<div className='relative min-h-screen w-full px-4 sm:px-6 lg:px-8 py-4 items-center justify-center bg-slate-100 dark:bg-gray-900 font-thin tracking-wide [word-spacing:0.1em]'>
+			{/* Copy notification message */}
+			{showCopyMessage && (
+				<div
+					className='fixed top-20 right-4 bg-gray-800 text-white py-2.5 px-5 rounded-lg shadow-lg z-50
+                    flex items-center gap-2 border border-gray-700
+                    animate-[fadeInOut_3s_ease-in-out]'>
+					<svg
+						xmlns='http://www.w3.org/2000/svg'
+						className='h-5 w-5 text-green-400'
+						fill='none'
+						viewBox='0 0 24 24'
+						stroke='currentColor'>
+						<path
+							strokeLinecap='round'
+							strokeLinejoin='round'
+							strokeWidth={2}
+							d='M5 13l4 4L19 7'
+						/>
+					</svg>
+					<span className='font-medium'>
+						Link copied to clipboard!
+					</span>
+				</div>
+			)}
+
+			{/* Auth modal */}
+			<AuthModal
+				isOpen={isAuthModalOpen}
+				onClose={() => setIsAuthModalOpen(false)}
+			/>
+
 			<div
 				// key={`content-${index}`}
 				className='mb-10 max-w-5xl mx-auto'>
@@ -172,7 +242,7 @@ export default function Blog() {
 										<button
 											className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2
 										      ${isBookmarked ? 'text-red-400' : ''}`}
-											onClick={() => setIsBookmarked(!isBookmarked)}>
+											onClick={handleBookmarkClick}>
 											{isBookmarked ? (
 												<IconBookmarkFilled className='h-5 w-auto' />
 											) : (
@@ -220,199 +290,23 @@ export default function Blog() {
 								</p>
 							</div>
 						</div>
-						)}
-						
+					)}
 				</div>
 				<div ref={commentsRef}>
-					<CommentsSection  blogId={blog._id} />
+					{isAuthenticated() ? (
+						<CommentsSection blogId={blog._id} />
+					) : (
+						<div className='p-4 text-center'>
+							<p>Please log in to view and post comments</p>
+							<button
+								onClick={() => setIsAuthModalOpen(true)}
+								className='mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors'>
+								Log in
+							</button>
+						</div>
+					)}
 				</div>
 			</div>
-			)
 		</div>
 	);
 }
-
-// const Content = [
-// 	{
-// 		title: 'Lorem Ipsum Dolor Sit Amet',
-// 		author: 'Harry Potter',
-// 		experience: 'Highly Experienced',
-// 		about: `Sit duis est minim proident non nisi velit non consectetur.
-// 					Esse adipisicing laboris consectetur enim ipsum
-// 					reprehenderit eu deserunt Lorem ut aliqua anim do. Duis
-// 					cupidatat qui irure cupidatat incididunt incididunt enim
-// 					magna id est qui sunt fugiat. Laboris do duis pariatur
-// 					fugiat Lorem aute sit ullamco. Qui deserunt non
-// 					reprehenderit dolore nisi velit exercitation Lorem qui do
-// 					enim culpa. Aliqua eiusmod in occaecat reprehenderit laborum
-// 					nostrud fugiat voluptate do Lorem culpa officia sint labore.
-// 					Tempor consectetur excepteur ut fugiat veniam commodo et
-// 					labore dolore commodo pariatur.`,
-// 		stats: {
-// 			likes: 456,
-// 			comment: 456,
-// 			dislikes: 456,
-// 		},
-// 		description: (
-// 			<>
-// 				<p>
-// 					Sit duis est minim proident non nisi velit non consectetur.
-// 					Esse adipisicing laboris consectetur enim ipsum
-// 					reprehenderit eu deserunt Lorem ut aliqua anim do. Duis
-// 					cupidatat qui irure cupidatat incididunt incididunt enim
-// 					magna id est qui sunt fugiat. Laboris do duis pariatur
-// 					fugiat Lorem aute sit ullamco. Qui deserunt non
-// 					reprehenderit dolore nisi velit exercitation Lorem qui do
-// 					enim culpa. Aliqua eiusmod in occaecat reprehenderit laborum
-// 					nostrud fugiat voluptate do Lorem culpa officia sint labore.
-// 					Tempor consectetur excepteur ut fugiat veniam commodo et
-// 					labore dolore commodo pariatur.
-// 				</p>
-// 				<p>
-// 					Dolor minim irure ut Lorem proident. Ipsum do pariatur est
-// 					ad ad veniam in commodo id reprehenderit adipisicing.
-// 					Proident duis exercitation ad quis ex cupidatat cupidatat
-// 					occaecat adipisicing.
-// 				</p>
-// 				<p>
-// 					Tempor quis dolor veniam quis dolor. Sit reprehenderit
-// 					eiusmod reprehenderit deserunt amet laborum consequat
-// 					adipisicing officia qui irure id sint adipisicing.
-// 					Adipisicing fugiat aliqua nulla nostrud. Amet culpa officia
-// 					aliquip deserunt veniam deserunt officia adipisicing aliquip
-// 					proident officia sunt.
-// 				</p>
-// 				<p>
-// 					Sit duis est minim proident non nisi velit non consectetur.
-// 					Esse adipisicing laboris consectetur enim ipsum
-// 					reprehenderit eu deserunt Lorem ut aliqua anim do. Duis
-// 					cupidatat qui irure cupidatat incididunt incididunt enim
-// 					magna id est qui sunt fugiat. Laboris do duis pariatur
-// 					fugiat Lorem aute sit ullamco. Qui deserunt non
-// 					reprehenderit dolore nisi velit exercitation Lorem qui do
-// 					enim culpa. Aliqua eiusmod in occaecat reprehenderit laborum
-// 					nostrud fugiat voluptate do Lorem culpa officia sint labore.
-// 					Tempor consectetur excepteur ut fugiat veniam commodo et
-// 					labore dolore commodo pariatur.
-// 				</p>
-// 				<p>
-// 					Dolor minim irure ut Lorem proident. Ipsum do pariatur est
-// 					ad ad veniam in commodo id reprehenderit adipisicing.
-// 					Proident duis exercitation ad quis ex cupidatat cupidatat
-// 					occaecat adipisicing.
-// 				</p>
-// 				<p>
-// 					Tempor quis dolor veniam quis dolor. Sit reprehenderit
-// 					eiusmod reprehenderit deserunt amet laborum consequat
-// 					adipisicing officia qui irure id sint adipisicing.
-// 					Adipisicing fugiat aliqua nulla nostrud. Amet culpa officia
-// 					aliquip deserunt veniam deserunt officia adipisicing aliquip
-// 					proident officia sunt.
-// 				</p>
-// 				<p>
-// 					Sit duis est minim proident non nisi velit non consectetur.
-// 					Esse adipisicing laboris consectetur enim ipsum
-// 					reprehenderit eu deserunt Lorem ut aliqua anim do. Duis
-// 					cupidatat qui irure cupidatat incididunt incididunt enim
-// 					magna id est qui sunt fugiat. Laboris do duis pariatur
-// 					fugiat Lorem aute sit ullamco. Qui deserunt non
-// 					reprehenderit dolore nisi velit exercitation Lorem qui do
-// 					enim culpa. Aliqua eiusmod in occaecat reprehenderit laborum
-// 					nostrud fugiat voluptate do Lorem culpa officia sint labore.
-// 					Tempor consectetur excepteur ut fugiat veniam commodo et
-// 					labore dolore commodo pariatur.
-// 				</p>
-// 				<p>
-// 					Dolor minim irure ut Lorem proident. Ipsum do pariatur est
-// 					ad ad veniam in commodo id reprehenderit adipisicing.
-// 					Proident duis exercitation ad quis ex cupidatat cupidatat
-// 					occaecat adipisicing.
-// 				</p>
-// 				<p>
-// 					Tempor quis dolor veniam quis dolor. Sit reprehenderit
-// 					eiusmod reprehenderit deserunt amet laborum consequat
-// 					adipisicing officia qui irure id sint adipisicing.
-// 					Adipisicing fugiat aliqua nulla nostrud. Amet culpa officia
-// 					aliquip deserunt veniam deserunt officia adipisicing aliquip
-// 					proident officia sunt.
-// 				</p>
-// 				<p>
-// 					Sit duis est minim proident non nisi velit non consectetur.
-// 					Esse adipisicing laboris consectetur enim ipsum
-// 					reprehenderit eu deserunt Lorem ut aliqua anim do. Duis
-// 					cupidatat qui irure cupidatat incididunt incididunt enim
-// 					magna id est qui sunt fugiat. Laboris do duis pariatur
-// 					fugiat Lorem aute sit ullamco. Qui deserunt non
-// 					reprehenderit dolore nisi velit exercitation Lorem qui do
-// 					enim culpa. Aliqua eiusmod in occaecat reprehenderit laborum
-// 					nostrud fugiat voluptate do Lorem culpa officia sint labore.
-// 					Tempor consectetur excepteur ut fugiat veniam commodo et
-// 					labore dolore commodo pariatur.
-// 				</p>
-// 				<p>
-// 					Dolor minim irure ut Lorem proident. Ipsum do pariatur est
-// 					ad ad veniam in commodo id reprehenderit adipisicing.
-// 					Proident duis exercitation ad quis ex cupidatat cupidatat
-// 					occaecat adipisicing.
-// 				</p>
-// 				<p>
-// 					Tempor quis dolor veniam quis dolor. Sit reprehenderit
-// 					eiusmod reprehenderit deserunt amet laborum consequat
-// 					adipisicing officia qui irure id sint adipisicing.
-// 					Adipisicing fugiat aliqua nulla nostrud. Amet culpa officia
-// 					aliquip deserunt veniam deserunt officia adipisicing aliquip
-// 					proident officia sunt.
-// 				</p>
-// 				<p>
-// 					Sit duis est minim proident non nisi velit non consectetur.
-// 					Esse adipisicing laboris consectetur enim ipsum
-// 					reprehenderit eu deserunt Lorem ut aliqua anim do. Duis
-// 					cupidatat qui irure cupidatat incididunt incididunt enim
-// 					magna id est qui sunt fugiat. Laboris do duis pariatur
-// 					fugiat Lorem aute sit ullamco. Qui deserunt non
-// 					reprehenderit dolore nisi velit exercitation Lorem qui do
-// 					enim culpa. Aliqua eiusmod in occaecat reprehenderit laborum
-// 					nostrud fugiat voluptate do Lorem culpa officia sint labore.
-// 					Tempor consectetur excepteur ut fugiat veniam commodo et
-// 					labore dolore commodo pariatur.
-// 				</p>
-// 				<p>
-// 					Dolor minim irure ut Lorem proident. Ipsum do pariatur est
-// 					ad ad veniam in commodo id reprehenderit adipisicing.
-// 					Proident duis exercitation ad quis ex cupidatat cupidatat
-// 					occaecat adipisicing.
-// 				</p>
-// 				<p>
-// 					Tempor quis dolor veniam quis dolor. Sit reprehenderit
-// 					eiusmod reprehenderit deserunt amet laborum consequat
-// 					adipisicing officia qui irure id sint adipisicing.
-// 					Adipisicing fugiat aliqua nulla nostrud. Amet culpa officia
-// 					aliquip deserunt veniam deserunt officia adipisicing aliquip
-// 					proident officia sunt.
-// 				</p>
-// 			</>
-// 		),
-// 		badge: 'React',
-// 		image:
-// 			'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=3540&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-// 		tags: [
-// 			'happy',
-// 			'sad',
-// 			'on periods',
-// 			'horny',
-// 			'hot404',
-// 			'sad',
-// 			'on periods',
-// 			'horny',
-// 			'hot404',
-// 			'sad',
-// 			'on periods',
-// 			'horny',
-// 			'hot404',
-// 			'sad',
-// 			'on periods',
-// 			'horny',
-// 			'hot404',
-// 		],
-// 	},
-// ];

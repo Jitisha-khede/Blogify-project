@@ -12,17 +12,34 @@ import {
 	IconMoon,
 	IconFilter,
 	IconUser,
+	IconLogin,
+	IconLogout,
 } from '@tabler/icons-react';
 import BookmarksDropdown from './bookmarks';
+import AuthModal from './ui/auth-modal';
 
 export const NavBar = () => {
 	const { theme, toggleTheme } = useTheme();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
+	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
 	const profileRef = useRef(null);
 	const navigate = useNavigate();
+
+	// Check if user is authenticated
+	const isAuthenticated = () => {
+		return localStorage.getItem('token') !== null;
+	};
+
+	// Handle logout
+	const handleLogout = () => {
+		localStorage.removeItem('token');
+		setIsProfileOpen(false);
+		// Optional: Navigate to home page or refresh the current page
+		navigate('/blogs');
+	};
 
 	useEffect(() => {
 		function handleClickOutside(event) {
@@ -43,33 +60,53 @@ export const NavBar = () => {
 	const links = [
 		{
 			title: 'Home',
-			to: '/',
+			to: '/blogs',
 			icon: IconHome,
 		},
 		{
 			title: 'Write',
 			to: '/create',
 			icon: IconPencil,
-		},
-		{
-			title: 'Blog',
-			to: '/blogs',
-			icon: IconArticle,
+			requiresAuth: true,
 		},
 		{
 			title: 'Bookmarks',
 			icon: IconBookmarks,
-			onClick: () => setIsBookmarksOpen(prev => !prev),
-		},
-		{
-			title: 'Filter',
-			to: '/login',
-			icon: IconFilter,
+			onClick: () => {
+				if (isAuthenticated()) {
+					setIsBookmarksOpen(prev => !prev);
+				} else {
+					setIsAuthModalOpen(true);
+				}
+			},
+			requiresAuth: true,
 		},
 	];
 
+	// Handle link click with auth protection
+	const handleLinkClick = link => {
+		if (link.requiresAuth && !isAuthenticated()) {
+			setIsAuthModalOpen(true);
+			return false;
+		}
+
+		if (link.onClick) {
+			link.onClick();
+		} else if (link.to) {
+			navigate(link.to);
+		}
+
+		return true;
+	};
+
 	return (
 		<div className='max-w-7xl mx-auto px-4'>
+			{/* Auth Modal */}
+			<AuthModal
+				isOpen={isAuthModalOpen}
+				onClose={() => setIsAuthModalOpen(false)}
+			/>
+
 			{/* Make the header fixed and add z-index */}
 			<div className='fixed top-0 left-0 right-0 bg-slate-100 dark:bg-gray-900 z-50'>
 				<div className='max-w-7xl mx-auto px-4'>
@@ -92,23 +129,14 @@ export const NavBar = () => {
 						{/* Desktop Navigation */}
 						<div className='flex items-center justify-end'>
 							<div className='hidden md:flex items-center gap-0'>
-								{links.map(link =>
-									link.to ? (
-										<Link
-											key={link.title}
-											to={link.to}
-											className='p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'>
-											<link.icon className='w-5 h-5' />
-										</Link>
-									) : (
-										<button
-											key={link.title}
-											onClick={link.onClick}
-											className='p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'>
-											<link.icon className='w-5 h-5' />
-										</button>
-									)
-								)}
+								{links.map(link => (
+									<button
+										key={link.title}
+										onClick={() => handleLinkClick(link)}
+										className='p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'>
+										<link.icon className='w-5 h-5' />
+									</button>
+								))}
 
 								<button
 									onClick={toggleTheme}
@@ -121,21 +149,35 @@ export const NavBar = () => {
 									)}
 								</button>
 							</div>
+
+							{/* Profile Button/Login Button */}
 							<div className='relative' ref={profileRef}>
-								<button
-									onClick={() => setIsProfileOpen(!isProfileOpen)}
-									className='p-2 rounded-lg transition-colors duration-200'
-									aria-label='Profile menu'>
-									<img
-										src='public/images/profile.jpg'
-										alt='Profile'
-										className='w-8 h-8 rounded-full object-cover border-2 border-blue-600 dark:border-blue-400'
-									/>
+								{isAuthenticated() ? (
+									<button
+										onClick={() => setIsProfileOpen(!isProfileOpen)}
+										className='p-2 rounded-lg transition-colors duration-200'
+										aria-label='Profile menu'>
+										<img
+											src='/images/profile.jpg'
+											alt='Profile'
+											className='w-8 h-8 rounded-full object-cover border-2 border-blue-600 dark:border-blue-400'
+											onError={e => {
+												e.target.src =
+													'https://via.placeholder.com/150';
+											}}
+										/>
+									</button>
+								) : (
+									<button
+										onClick={() => setIsAuthModalOpen(true)}
+										className='p-2 rounded-lg transition-colors duration-200 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1'
+										aria-label='Login'>
+										<IconLogin className='w-5 h-5' />
+										<span className='text-sm'>Login</span>
+									</button>
+								)}
 
-									{/* <IconUser className='w-5 h-5 text-blue-600 dark:text-blue-400' /> */}
-								</button>
-
-								{isProfileOpen && (
+								{isProfileOpen && isAuthenticated() && (
 									<div className='absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-lg shadow-lg py-2 border dark:border-gray-800 z-50'>
 										<button
 											onClick={() => {
@@ -143,17 +185,20 @@ export const NavBar = () => {
 												navigate('/profile');
 											}}
 											className='w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-800'>
-											Show Profile
+											<div className='flex items-center gap-2'>
+												<IconUser className='w-4 h-4' />
+												<span>Profile</span>
+											</div>
 										</button>
 
 										<div className='border-t dark:border-gray-800 my-1'></div>
 										<button
-											onClick={() => {
-												setIsProfileOpen(false);
-												// Add login/logout logic here
-											}}
-											className='w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-800'>
-											Logout
+											onClick={handleLogout}
+											className='w-full text-left px-4 py-2 text-gray-600 hover:text-red-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-red-400 dark:hover:bg-gray-800'>
+											<div className='flex items-center gap-2'>
+												<IconLogout className='w-4 h-4' />
+												<span>Logout</span>
+											</div>
 										</button>
 									</div>
 								)}
@@ -175,35 +220,28 @@ export const NavBar = () => {
 			{isMenuOpen && (
 				<div
 					className={`md:hidden fixed inset-x-0 top-16 bg-white dark:bg-gray-900 border-t 
-					dark:border-gray-800 shadow-lg z-50 h-[calc(100vh-4rem)] transition-transform duration-300 
-					${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-					{/* Mobile Search Bar */}
-
+                    dark:border-gray-800 shadow-lg z-50 h-[calc(100vh-4rem)] transition-transform duration-300 
+                    ${
+											isMenuOpen
+												? 'translate-x-0'
+												: '-translate-x-full'
+										}`}>
 					{/* Mobile Menu Links */}
 					<div className='flex flex-col p-4 space-y-4'>
-						{links.map(link =>
-							link.to ? (
-								<Link
-									key={link.title}
-									to={link.to}
-									className='flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'
-									onClick={() => setIsMenuOpen(false)}>
-									<link.icon className='w-5 h-5' />
-									<span>{link.title}</span>
-								</Link>
-							) : (
-								<button
-									key={link.title}
-									onClick={e => {
-										link.onClick(e);
+						{links.map(link => (
+							<button
+								key={link.title}
+								onClick={() => {
+									const success = handleLinkClick(link);
+									if (success) {
 										setIsMenuOpen(false);
-									}}
-									className='flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'>
-									<link.icon className='w-5 h-5' />
-									<span>{link.title}</span>
-								</button>
-							)
-						)}
+									}
+								}}
+								className='flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'>
+								<link.icon className='w-5 h-5' />
+								<span>{link.title}</span>
+							</button>
+						))}
 					</div>
 
 					<div className='flex items-center justify-between pt-4 border-t dark:border-gray-800'>

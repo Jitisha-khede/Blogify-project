@@ -130,60 +130,6 @@ export const FilterSidebar = ({
 					</div>
 				</div>
 
-				{/* Date filter */}
-				<div>
-					<h3
-						className={`font-medium mb-2 ${
-							isMobile ? 'text-lg' : ''
-						}`}>
-						Date Range
-					</h3>
-					<div className='space-y-3'>
-						<div>
-							<label
-								className={`block mb-1 ${
-									isMobile ? 'text-lg' : 'text-sm'
-								}`}>
-								From
-							</label>
-							<input
-								type='date'
-								className={`w-full px-3 border rounded-md bg-background ${
-									isMobile ? 'py-3 text-lg' : 'py-2'
-								}`}
-								value={dateRange.from}
-								onChange={e =>
-									setDateRange(prev => ({
-										...prev,
-										from: e.target.value,
-									}))
-								}
-							/>
-						</div>
-						<div>
-							<label
-								className={`block mb-1 ${
-									isMobile ? 'text-lg' : 'text-sm'
-								}`}>
-								To
-							</label>
-							<input
-								type='date'
-								className={`w-full px-3 border rounded-md bg-background ${
-									isMobile ? 'py-3 text-lg' : 'py-2'
-								}`}
-								value={dateRange.to}
-								onChange={e =>
-									setDateRange(prev => ({
-										...prev,
-										to: e.target.value,
-									}))
-								}
-							/>
-						</div>
-					</div>
-				</div>
-
 				{/* Sort by */}
 				<div>
 					<h3

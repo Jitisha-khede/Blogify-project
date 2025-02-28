@@ -11,7 +11,11 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '@/utils/api';
 
-export default function LoginForm({ onToggle }) {
+export default function LoginForm({
+	onToggle,
+	onLoginSuccess,
+	preventRedirect = false,
+}) {
 	const navigate = useNavigate();
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -39,8 +43,12 @@ export default function LoginForm({ onToggle }) {
 		try {
 			const response = await loginUser(formDataToSend);
 			console.log(response);
-			setSuccess(response.message);
-			navigate('/blogs');
+			// Store the token in localStorage for auth checks
+			localStorage.setItem('token', response.data.token);
+			if (onLoginSuccess) onLoginSuccess();
+			if (!preventRedirect) {
+				navigate('/blogs');
+			}
 		} catch (error) {
 			setError(error.message);
 		} finally {
@@ -51,7 +59,7 @@ export default function LoginForm({ onToggle }) {
 	return (
 		<div className='max-w-md w-full mt-8 md:mt-16 mx-auto rounded-xl md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-gray-800'>
 			<h2 className='font-bold text-xl text-neutral-800 dark:text-neutral-200'>
-				Welcome to Blogify
+				Welcome Back Blogifier !!
 			</h2>
 			<p className='text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300'>
 				Login to Continue

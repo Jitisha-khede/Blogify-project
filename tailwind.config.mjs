@@ -69,6 +69,17 @@ export default {
 					'var(--font-montserrat)',
 					...defaultTheme.fontFamily.sans,
 				],
+				keyframes: {
+					fadeInOut: {
+						'0%': { opacity: '0', transform: 'translateY(-10px)' },
+						'10%': { opacity: '1', transform: 'translateY(0)' },
+						'80%': { opacity: '1', transform: 'translateY(0)' },
+						'100%': { opacity: '0', transform: 'translateY(-10px)' },
+					},
+				},
+				animation: {
+					fadeInOut: 'fadeIn 1s ease-in',
+				},
 			},
 		},
 	},

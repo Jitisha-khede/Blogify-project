@@ -29,20 +29,6 @@ function Layout() {
 	return (
 		<>
 			{!hideNavbar && <NavBar setSearchResults={setSearchResults} />}
-			{/* <Routes>
-				<Route path='/' element={<GettingStarted />} /> */}
-			{/* <Route path='/blogs' element={<Blog />} /> */}
-			{/* <Route path='/create' element={<Create />} />
-				<Route path='/blogs' element={<Catelog />} />
-				<Route path='/blog/:id' element={<Blog />} />
-				<Route path='/signup' element={<SignupForm />} />
-				<Route path='/login' element={<LoginForm />} />
-
-				<Route path='/login' element={<Form />} />
-				<Route path='/edit-profile' element={<PersonalInfo />} />
-				<Route path='/profile' element={<Profile />} />
-			</Routes> */}
-
 			<Routes>
 				<Route path='/' element={<GettingStarted />} />
 				{/* <Route path='/blogs' element={<Blog />} /> */}

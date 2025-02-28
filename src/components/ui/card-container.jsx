@@ -18,10 +18,16 @@ import {
 export const HoverEffect = ({ items, className, filterOpen }) => {
 	let [hoveredIndex, setHoveredIndex] = useState(null);
 	const [isBookmarked, setIsBookmarked] = useState(false);
+	const [showCopyMessage, setShowCopyMessage] = useState(false);
 	const copyToClipboard = () => {
 		navigator.clipboard
 			.writeText(window.location.href)
-			.then(() => alert('Link copied to clipboard!'))
+			.then(() => {
+				setShowCopyMessage(true);
+				setTimeout(() => {
+					setShowCopyMessage(false);
+				}, 1000); // Hide after 1 seconds
+			})
 			.catch(err => console.error('Failed to copy:', err));
 	};
 
@@ -35,6 +41,29 @@ export const HoverEffect = ({ items, className, filterOpen }) => {
 					: 'md:grid-cols-2 lg:grid-cols-3',
 				className
 			)}>
+			{showCopyMessage && (
+				<div
+					className='fixed top-20 right-4 bg-gray-200 text-gray-800 py-2.5 px-5 rounded-lg shadow-lg z-50
+                    flex items-center gap-2 border border-gray-400
+                    animate-[fadeInOut_1s_ease-in-out]'>
+					<svg
+						xmlns='http://www.w3.org/2000/svg'
+						className='h-5 w-5 text-green-400'
+						fill='none'
+						viewBox='0 0 24 24'
+						stroke='currentColor'>
+						<path
+							strokeLinecap='round'
+							strokeLinejoin='round'
+							strokeWidth={2}
+							d='M5 13l4 4L19 7'
+						/>
+					</svg>
+					<span className='font-medium'>
+						Link copied to clipboard!
+					</span>
+				</div>
+			)}
 			{items.map((item, idx) => (
 				<Link
 					href={item?.link}
