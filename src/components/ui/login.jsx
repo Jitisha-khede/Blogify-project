@@ -23,14 +23,17 @@ export default function LoginForm({ onToggle }) {
 	const handleChange = e => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
-	
+
 	const handleSubmit = async e => {
-		console.log('form submitted!')
+		console.log('form submitted!');
 		e.preventDefault();
 		setLoading(true);
 		setError(null);
 
-		const formDataToSend = { login: formData.login, password: formData.password }; 
+		const formDataToSend = {
+			login: formData.login,
+			password: formData.password,
+		};
 		console.log(formDataToSend);
 
 		try {
@@ -55,32 +58,32 @@ export default function LoginForm({ onToggle }) {
 			</p>
 			<form className='my-8' onSubmit={handleSubmit}>
 				<LabelInputContainer className='mb-4'>
-				<div className='flex flex-col space-y-2'>
-					<Label htmlFor='login'>Email or Username</Label>
-					<Input
-						id='login'
-						name='login'
-						type='text'
-						placeholder='Enter your email or username'
-						value={formData.login}
-						onChange={handleChange}
-						required
-					/>
-				</div>
+					<div className='flex flex-col space-y-2'>
+						<Label htmlFor='login'>Email or Username</Label>
+						<Input
+							id='login'
+							name='login'
+							type='text'
+							placeholder='Enter your email or username'
+							value={formData.login}
+							onChange={handleChange}
+							required
+						/>
+					</div>
 
-				{/* Password Input */}
-				<div className='flex flex-col space-y-2'>
-					<Label htmlFor='password'>Password</Label>
-					<Input
-						id='password'
-						name='password'
-						type='password'
-						placeholder='••••••••'
-						value={formData.password}
-						onChange={handleChange}
-						required
-					/>
-				</div>
+					{/* Password Input */}
+					<div className='flex flex-col space-y-2'>
+						<Label htmlFor='password'>Password</Label>
+						<Input
+							id='password'
+							name='password'
+							type='password'
+							placeholder='••••••••'
+							value={formData.password}
+							onChange={handleChange}
+							required
+						/>
+					</div>
 				</LabelInputContainer>
 
 				{/* <LabelInputContainer className='mb-8'>
