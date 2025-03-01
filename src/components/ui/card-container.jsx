@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import Link from 'next/link';
+import { Link } from 'react-router-dom'; // Update this import
 import Image from 'next/image';
 import { CardBody, CardContainer, CardItem } from './3d-card';
 // import { OrbitingCircles } from './orbiting-circles';
@@ -19,14 +19,18 @@ export const HoverEffect = ({ items, className, filterOpen }) => {
 	let [hoveredIndex, setHoveredIndex] = useState(null);
 	const [isBookmarked, setIsBookmarked] = useState(false);
 	const [showCopyMessage, setShowCopyMessage] = useState(false);
-	const copyToClipboard = () => {
+	const copyToClipboard = (e, blogLink) => {
+		e.preventDefault(); // Prevent the link navigation
+		e.stopPropagation(); // Prevent event bubbling to parent elements
+
+		const fullUrl = window.location.origin + blogLink;
 		navigator.clipboard
-			.writeText(window.location.href)
+			.writeText(fullUrl)
 			.then(() => {
 				setShowCopyMessage(true);
 				setTimeout(() => {
 					setShowCopyMessage(false);
-				}, 1000); // Hide after 1 seconds
+				}, 1000);
 			})
 			.catch(err => console.error('Failed to copy:', err));
 	};
@@ -66,7 +70,7 @@ export const HoverEffect = ({ items, className, filterOpen }) => {
 			)}
 			{items.map((item, idx) => (
 				<Link
-					href={item?.link}
+					to={item?.link} // Change 'href' to 'to' for React Router
 					key={item?.link}
 					className='relative group block h-full w-full'
 					onMouseEnter={() => setHoveredIndex(idx)}
@@ -102,66 +106,54 @@ export const HoverEffect = ({ items, className, filterOpen }) => {
 									translateZ={20}
 									as='div'
 									className='rounded-xl text-s font-normal dark:text-white w-auto'>
-									<Link href='#' className='block'>
-										<div className='h-auto w-full mt-4 rounded-full  flex items-center justify-start gap-1'>
-											<button className='flex flex-1 items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
-												<IconThumbUp className='h-6 w-auto dark:text-white text-black' />
-												<span className='dark:text-white text-black text-lg'>
-													{item.likes}
-												</span>
-											</button>
+									<div className='h-auto w-full mt-4 rounded-full  flex items-center justify-start gap-1'>
+										<button className='flex flex-1 items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
+											<IconThumbUp className='h-6 w-auto dark:text-white text-black' />
+											<span className='dark:text-white text-black text-lg'>
+												{item.likes}
+											</span>
+										</button>
 
-											<button className='flex flex-1 items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
-												<IconThumbDown className='h-6 w-auto text-black dark:text-white' />
-												<span className='dark:text-white text-black text-lg'>
-													{item.dislikes}
-												</span>
-											</button>
-											<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
-												<IconMessage className='h-6 w-auto text-black dark:text-white' />
-												<span className='dark:text-white text-black text-lg'>
-													{item.commentCount}
-												</span>
-											</button>
+										<button className='flex flex-1 items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
+											<IconThumbDown className='h-6 w-auto text-black dark:text-white' />
+											<span className='dark:text-white text-black text-lg'>
+												{item.dislikes}
+											</span>
+										</button>
+										<button className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
+											<IconMessage className='h-6 w-auto text-black dark:text-white' />
+											<span className='dark:text-white text-black text-lg'>
+												{item.commentCount}
+											</span>
+										</button>
 
-											<button
-												className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2
+										<button
+											className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2
                                               ${
 																								isBookmarked
 																									? 'text-red-400'
 																									: ''
 																							}`}
-												onClick={() =>
-													setIsBookmarked(!isBookmarked)
-												}>
-												{isBookmarked ? (
-													<IconBookmarksFilled className='h-5 w-auto' />
-												) : (
-													<IconBookmark className='h-5 w-auto' />
-												)}
-											</button>
-											<button
-												onClick={copyToClipboard}
-												className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
-												<IconLink className='h-6 w-auto text-black dark:text-white' />
-											</button>
-										</div>
-									</Link>
+											onClick={() => setIsBookmarked(!isBookmarked)}>
+											{isBookmarked ? (
+												<IconBookmarksFilled className='h-5 w-auto' />
+											) : (
+												<IconBookmark className='h-5 w-auto' />
+											)}
+										</button>
+										<button
+											onClick={e => copyToClipboard(e, item.link)}
+											className='flex items-center dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-all px-2'>
+											<IconLink className='h-6 w-auto text-black dark:text-white' />
+										</button>
+									</div>
 								</CardItem>
 							</div>
 							<div className='flex justify-between items-center mt-2'>
 								<CardItem
 									translateZ={20}
 									as='div'
-									className='rounded-2xl font-normal dark:text-white'>
-									<Link
-										href='#'
-										onClick={e => {
-											e.preventDefault();
-											window.open(item.github, '_blank');
-										}}
-										className='flex items-center gap-2'></Link>
-								</CardItem>
+									className='rounded-2xl font-normal dark:text-white'></CardItem>
 							</div>
 						</CardBody>
 					</CardContainer>

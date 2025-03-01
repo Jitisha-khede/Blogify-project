@@ -63,39 +63,47 @@ export const fetchUserById = async id => {
 	}
 };
 
-export const fetchComments = async (blogId) => {
+export const fetchComments = async blogId => {
 	try {
-		const response = await fetch(`${API_URL}/api/comment/getComments/${blogId}`);
+		const response = await fetch(
+			`${API_URL}/api/comment/getComments/${blogId}`
+		);
 		const result = await response.json();
 		if (result.success) {
 			return result.data.comments;
 		} else {
 			throw new Error('Failed to fetch comments');
 		}
-	}
-	catch (error) {
+	} catch (error) {
 		console.error('Error fetching comments:', error);
 		return [];
 	}
-}
-
-export const signupUser = async (formData) => {
-    try {
-        const response = await axios.post(`${API_URL}/api/user/signup`, formData);
-		console.log(response);
-        return response.data;
-    } catch (error) {
-        throw error.response?.data || { message: 'Something went wrong' };
-    }
 };
 
-export const loginUser = async (formData) => {
-    try {
-        const response = await axios.post(`${API_URL}/api/user/login`, formData, {
-            withCredentials: true // Ensures cookies are sent & stored
-        });
-        return response.data;
-    } catch (error) {
-        throw error.response?.data || { message: 'Something went wrong' };
-    }
+export const signupUser = async formData => {
+	try {
+		const response = await axios.post(
+			`${API_URL}/api/user/signup`,
+			formData
+		);
+		console.log(response);
+		return response.data;
+	} catch (error) {
+		throw error.response?.data || { message: 'Something went wrong' };
+	}
+};
+
+export const loginUser = async formData => {
+	try {
+		const response = await axios.post(
+			`${API_URL}/api/user/login`,
+			formData,
+			{
+				withCredentials: true, // Ensures cookies are sent & stored
+			}
+		);
+		return response.data;
+	} catch (error) {
+		throw error.response?.data || { message: 'Something went wrong' };
+	}
 };
