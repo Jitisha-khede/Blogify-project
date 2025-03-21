@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_URL =
-	process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+	process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export const fetchBlogs = async () => {
 	try {
@@ -99,11 +99,112 @@ export const loginUser = async formData => {
 			`${API_URL}/api/user/login`,
 			formData,
 			{
-				withCredentials: true, // Ensures cookies are sent & stored
+				withCredentials: true, 
 			}
 		);
-		return response.data;
+		// console.log("response:",response);
+		const userData = response.data.data;
+
+		localStorage.setItem('userId', userData.loggedIn._id);  
+
+		return userData;
 	} catch (error) {
 		throw error.response?.data || { message: 'Something went wrong' };
 	}
 };
+
+export const voteBlog = async (blogId, voteType, token) => {
+    try {
+        const response = await axios.post(
+            `${API_URL}/api/blog/voteBlog`, 
+            { blogId, voteType }, 
+            
+			{
+				withCredentials: true,  
+				headers: {
+					"Content-Type": "application/json",
+				},
+
+			}
+        );
+		// console.log("✅ Vote success:", response.data);
+        return response.data; 
+    } catch (error) {
+        console.error("Error voting blog:", error.response?.data?.message || error.message);
+        throw error;
+    }
+};	
+
+export const removeBlogVote = async (blogId) => {
+	try {
+		const response = await axios.delete(
+		  `${API_URL}/api/blog/deleteVote`,
+		  {
+			data: { blogId }, // Send `blogId` in the request body
+			withCredentials: true, // Ensure cookies (JWT) are sent
+		  }
+		);
+		return response.data;
+	  } catch (error) {
+		console.error("Error removing blog from bookmarks:", error.response?.data);
+		throw error;
+	  }
+}
+
+export const fetchBookmarks = async () => {
+	try{
+		// const token = localStorage.getItem("token"); 
+		const response = await fetch(`${API_URL}/api/bookmark/getAllBookmarks`, {
+			method: "GET",
+			credentials: "include", 
+		  });
+		const result = await response.json();
+		// console.log(result);
+		if (result.success) {
+			return result.data; // Return the blogs array
+		} else {
+			throw new Error('Failed to fetch blogs');
+		}
+	}
+	catch(err){
+		console.log(err)
+	}	
+}
+
+export const removeFromBookmarks = async (blogId) => {
+	try {
+	  const response = await axios.delete(
+		`${API_URL}/api/bookmark/removeFromBookmarks`,
+		{
+		  data: { blogId }, // Send `blogId` in the request body
+		  withCredentials: true, // Ensure cookies (JWT) are sent
+		}
+	  );
+	  return response.data;
+	} catch (error) {
+	  console.error("Error removing blog from bookmarks:", error.response?.data);
+	  throw error;
+	}
+  };
+
+export const addToBookmark = async(blogId) => {
+	try{
+		const response = await axios.post(
+            `${API_URL}/api/bookmark/addtobookmarks`, 
+            { blogId }, 
+            
+			{
+				withCredentials: true,  
+				headers: {
+					"Content-Type": "application/json",
+				},
+
+			}
+        );  
+
+		return response.data;
+	}
+	catch(err){
+		console.log(err);
+	}
+}

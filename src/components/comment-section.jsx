@@ -12,17 +12,51 @@ import {
 } from 'lucide-react';
 import { fetchComments } from '@/utils/api';
 import AuthModal from './ui/auth-modal';
+import { fetchUserById } from '@/utils/api';
 
 const CommentsSection = ({ blogId }) => {
 	const [comments, setComments] = useState([]);
 	const [newComment, setNewComment] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+	const [ProfilePic,setProfilePic] = useState('https://res.cloudinary.com/ddagtg9fo/image/upload/v1736452441/hk7sfadgvpsmtdt6kgv7.png')
+	const userId = localStorage.getItem('userId');
+	const [currentUser, setCurrentUser] = useState(null);
+
+	useEffect(() => {
+		const fetchUserData = async () => {
+			if (!userId) return;	
+			const userData = await fetchUserById(userId);
+			// console.log('user data: ', userData.data.user);
+			if (userData) {
+				setCurrentUser(userData.data.user);
+				// console.log('curentUser: ', userData.data.user);
+				
+				// setProfilePic(userData.profilePhoto);
+			}
+			
+			if(userData.data.user.profileImage){
+				setProfilePic(userData.data.user.profileImage);
+			}
+		};
+		fetchUserData();
+	},[userId])
+
+	// useEffect(() => {
+	// 		const fetchUserData = async () => {
+	// 			if (!userId) return;
+	// 			const userData = await fetchUserById(userId);
+	// 			if (userData && userData.profilePhoto) {
+	// 				setProfilePic(userData.profilePhoto);
+	// 			}
+	// 		};
+	// 		fetchUserData();
+	// 	},[userId])	
 
 	useEffect(() => {
 		const getComments = async () => {
 			const commentsData = await fetchComments(blogId);
-			console.log('comments data: ', commentsData);
+			// console.log('comments data: ', commentsData);
 
 			// Create a map of comments by id
 			const commentMap = {};
@@ -53,11 +87,11 @@ const CommentsSection = ({ blogId }) => {
 		getComments();
 	}, [blogId]);
 
-	const currentUser = {
-		id: 'user1',
-		username: 'john_doe',
-		avatar: '/api/placeholder/32/32',
-	};
+	// const currentUser = {
+	// 	id: 'user1',
+	// 	userName: 'john_doe',
+	// 	avatar: '/api/placeholder/32/32',
+	// };
 
 	const [replyText, setReplyText] = useState('');
 	const [replyingTo, setReplyingTo] = useState(null);
@@ -174,7 +208,7 @@ const CommentsSection = ({ blogId }) => {
 		return (
 			<div className={`flex gap-3`}>
 				<img
-					src={comment.user.profileImage}
+					src={ProfilePic}
 					alt={comment.user.userName}
 					className='w-8 h-8 rounded-full'
 				/>
@@ -225,7 +259,7 @@ const CommentsSection = ({ blogId }) => {
 					{replyingTo === comment.id && (
 						<div className='mt-3 flex items-center gap-3'>
 							<img
-								src={currentUser.avatar}
+								src={ProfilePic}
 								alt={currentUser.username}
 								className='w-8 h-8 rounded-full'
 							/>
@@ -268,11 +302,11 @@ const CommentsSection = ({ blogId }) => {
 
 	// Check if user is authenticated
 	const isAuthenticated = () => {
-		return localStorage.getItem('token') !== null;
+		return document.cookie.split('; ').some(cookie => cookie.startsWith('token='));
 	};
 
 	// Show login modal if user tries to post comment while not logged in
-	const handleCommentSubmit = e => {
+	const handleAddComment = e => {
 		e.preventDefault();
 
 		if (!isAuthenticated()) {
@@ -293,8 +327,8 @@ const CommentsSection = ({ blogId }) => {
 			<div className='w-full max-w-5xl mx-auto'>
 				<div className='flex items-center gap-3 p-4 border-b dark:border-gray-700'>
 					<img
-						src={currentUser.avatar}
-						alt={currentUser.username}
+						src={ProfilePic}
+						alt="abc"
 						className='w-8 h-8 rounded-full'
 					/>
 					<input
@@ -303,7 +337,7 @@ const CommentsSection = ({ blogId }) => {
 						onChange={e => setNewComment(e.target.value)}
 						onKeyPress={e => {
 							if (e.key === 'Enter' && newComment.trim()) {
-								handleAddComment();
+								handleAddComment(e);
 							}
 						}}
 						placeholder='Add a comment...'

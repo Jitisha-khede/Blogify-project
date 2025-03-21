@@ -1,7 +1,8 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
-import { SearchBar } from './ui/searchbar';
+import { useState, useRef, useEffect, use } from 'react';
+import { SearchBar } from './ui/searchBar';
 import { useTheme } from './ui/useTheme';
+import { fetchUserById } from '@/utils/api';
 import { Link, useNavigate } from 'react-router-dom';
 import {
 	IconBookmarks,
@@ -17,29 +18,58 @@ import {
 } from '@tabler/icons-react';
 import BookmarksDropdown from './bookmarks';
 import AuthModal from './ui/auth-modal';
+import { fetchBoookmarks } from '@/utils/api';
 
 export const NavBar = () => {
 	const { theme, toggleTheme } = useTheme();
+	const [user, setUser] = useState(null);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
 	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+	const [ProfilePic,setProfilePic] = useState('https://res.cloudinary.com/ddagtg9fo/image/upload/v1736452441/hk7sfadgvpsmtdt6kgv7.png')
+	const userId = localStorage.getItem('userId');
 
 	const profileRef = useRef(null);
 	const navigate = useNavigate();
 
 	// Check if user is authenticated
 	const isAuthenticated = () => {
-		return localStorage.getItem('token') !== null;
+		return document.cookie.split('; ').some(cookie => cookie.startsWith('token='));
 	};
 
 	// Handle logout
-	const handleLogout = () => {
-		localStorage.removeItem('token');
-		setIsProfileOpen(false);
-		// Optional: Navigate to home page or refresh the current page
-		navigate('/blogs');
-	};
+	// import { useNavigate } from "react-router-dom";
+
+const handleLogout = () => {
+    // Remove token from localStorage
+    localStorage.removeItem("token");
+
+    // Remove userId (if stored)
+    localStorage.removeItem("userId");
+
+    // Remove cookies
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+    // Close profile dropdown (if open)
+    setIsProfileOpen(false);
+	setUser(null);
+    // Redirect to /blogs
+    // navigate("/blogs");
+};
+
+
+	useEffect(() => {
+			const fetchUserData = async () => {
+				if (!userId) return;	
+				const userData = await fetchUserById(userId);
+				if(userData.data.user.profileImage){
+					setProfilePic(userData.data.user.profileImage);
+				}
+			};
+			fetchUserData();
+	},[userId])	
 
 	useEffect(() => {
 		function handleClickOutside(event) {
@@ -158,7 +188,7 @@ export const NavBar = () => {
 										className='p-2 rounded-lg transition-colors duration-200'
 										aria-label='Profile menu'>
 										<img
-											src='/images/profile.jpg'
+											src={ProfilePic}
 											alt='Profile'
 											className='w-8 h-8 rounded-full object-cover border-2 border-blue-600 dark:border-blue-400'
 											onError={e => {

@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom';
 import CommentsSection from './comment-section';
 import { fetchBlogById, fetchUserById } from '@/utils/api';
 import AuthModal from './ui/auth-modal';
+import { voteBlog, removeBlogVote, addToBookmark,removeFromBookmarks, fetchBookmarks } from '@/utils/api';
 
 export default function Blog() {
 	const { id } = useParams();
@@ -30,12 +31,12 @@ export default function Blog() {
 	const [isDisliked, setIsDisliked] = useState(false);
 	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 	const [showCopyMessage, setShowCopyMessage] = useState(false);
+	const [votes, setVotes] = useState({ upvotesCount: 0, downvotesCount: 0 });
 	const commentsRef = useRef(null);
 
 	// Check if user is authenticated
 	const isAuthenticated = () => {
-		// Check for user token in localStorage or context
-		return localStorage.getItem('token') !== null;
+		return document.cookie.split('; ').some(cookie => cookie.startsWith('token='));
 	};
 
 	// Wrapper function for interaction that requires authentication
@@ -51,7 +52,6 @@ export default function Blog() {
 	useEffect(() => {
 		const getBlog = async () => {
 			const response = await fetchBlogById(id);
-			console.log(response.data.blog);
 			setBlog(response?.data?.blog || null);
 			setLoading(false);
 		};
@@ -66,15 +66,80 @@ export default function Blog() {
 
 	useEffect(() => {
 		if (blog?.createdBy) {
-			console.log('Fetching author details...');
-			getAuthorDetails(blog.createdBy);
+		  getAuthorDetails(blog.createdBy);
 		}
-	}, [blog]); // Run when `blog` updates
+	  }, [blog?.createdBy]);
+
+	useEffect(() => {
+		const checkIfBookmarked = async () => {
+			try {
+				let bookmarks = await fetchBookmarks();
+				console.log("Fetched bookmarks:", bookmarks.bookmarks);
+				
+				bookmarks = bookmarks.bookmarks; 
+
+				if (!Array.isArray(bookmarks)) {
+					console.error("Error: bookmarks is not an array", bookmarks);
+					return;
+				}
+	
+				const isAlreadyBookmarked = bookmarks.some(
+					(bookmark) => bookmark._id === blog?._id
+				);
+	
+				console.log(`Is blog bookmarked? ${isAlreadyBookmarked}`);
+				setIsBookmarked(isAlreadyBookmarked);
+			} catch (error) {
+				console.error("Error fetching bookmarks:", error);
+			}
+		};
+	
+		if (blog?._id) {
+			checkIfBookmarked();
+		}
+	
+	}, [blog?._id]);
+
+	useEffect(() => {
+		const checkIfVoted = async () => {
+			try {
+				const token = localStorage.getItem("token");
+				if (!token) return; // Exit if not logged in
+	
+				const response = await fetchBlogById(id); 
+				const blogData = response?.data?.blog;
+	
+				if (!blogData) return;
+	
+				// Assuming blog.upvotes and blog.downvotes store user IDs who voted
+				const userId = localStorage.getItem("userId"); // Fetch user ID from storage
+	
+				const hasUpvoted = blogData.upvotes.includes(userId);
+				const hasDownvoted = blogData.downvotes.includes(userId);
+	
+				setIsLiked(hasUpvoted);
+				setIsDisliked(hasDownvoted);
+	
+				// Update vote counts
+				setVotes({
+					upvotesCount: blogData.upvotes.length,
+					downvotesCount: blogData.downvotes.length
+				});
+	
+			} catch (error) {
+				console.error("Error fetching votes:", error);
+			}
+		};
+	
+		if (blog?._id) {
+			checkIfVoted();
+		}
+	}, [blog?._id]);	
 
 	const getAuthorDetails = async authorId => {
 		try {
 			const response = await fetchUserById(authorId);
-			console.log('Author API Response:', response);
+			// console.log('Author API Response:', response);
 			setAuthor(response.data.user || null);
 		} catch (error) {
 			console.error('Error fetching author:', error);
@@ -102,29 +167,74 @@ export default function Blog() {
 			.catch(err => console.error('Failed to copy:', err));
 	};
 
-	const handleLikeClick = () => {
-		requireAuth(() => {
-			if (isDisliked) {
-				setIsDisliked(false);
-			}
-			setIsLiked(!isLiked);
-		});
+	const getTokenFromCookies = () => {
+		const cookies = document.cookie.split("; ");
+		const tokenCookie = cookies.find(cookie => cookie.startsWith("token="));
+		return tokenCookie ? tokenCookie.split("=")[1] : null;
 	};
 
-	const handleDislikeClick = () => {
-		requireAuth(() => {
-			if (isLiked) {
-				setIsLiked(false);
+	const handleVote = async (blogId, voteType) => {
+		requireAuth(async () => {
+			try {
+				const token = getTokenFromCookies();
+	
+				// Remove vote if the user clicks on the same vote type again
+				if ((voteType === "upvote" && isLiked) || (voteType === "downvote" && isDisliked)) {
+					await removeBlogVote(blogId, token);
+					setIsLiked(false);
+					setIsDisliked(false);
+					setVotes(prevVotes => ({
+						upvotesCount: voteType === "upvote" ? prevVotes.upvotesCount - 1 : prevVotes.upvotesCount,
+						downvotesCount: voteType === "downvote" ? prevVotes.downvotesCount - 1 : prevVotes.downvotesCount,
+					}));
+					return;
+				}
+	
+				// Otherwise, proceed with voting
+				const updatedVotes = await voteBlog(blogId, voteType, token);
+	
+				// Update frontend state immediately
+				if (voteType === "upvote") {
+					setIsLiked(true);
+					setIsDisliked(false);
+				} else if (voteType === "downvote") {
+					setIsLiked(false);
+					setIsDisliked(true);
+				}
+	
+				setVotes(updatedVotes);
+	
+			} catch (error) {
+				alert("Error voting blog: " + error.message);
 			}
-			setIsDisliked(!isDisliked);
 		});
+	};
+	
+
+	const handleBookmarkClick = async (id) => {
+		requireAuth(async () => {
+			try {
+				if (isBookmarked) {
+					await removeFromBookmarks(id );
+					setIsBookmarked(false);
+				} else {
+					await addToBookmark(id);
+					setIsBookmarked(true);
+				}
+		
+			} catch (error) {
+				console.error("Error handling bookmark:", error);
+			}
+		})
 	};
 
-	const handleBookmarkClick = () => {
-		requireAuth(() => {
-			setIsBookmarked(!isBookmarked);
-		});
-	};
+	// const handleBookmarkClick = async () => {
+	// 	const response = await fetcBoookmarks();
+		
+	// 	requireAuth(() => {
+	// 		setIsBookmarked(!isBookmarked);
+	// 	});
+	// };
 
 	const scrollToComments = () => {
 		// If user isn't authenticated, show login modal instead of scrolling
@@ -198,7 +308,7 @@ export default function Blog() {
 									{/* Interaction buttons */}
 									<div className='flex flex-wrap items-center gap-2 w-full min-w-80 md:w-auto mt-1'>
 										<button
-											onClick={handleLikeClick}
+											onClick={() => handleVote(blog._id, "upvote")}
 											className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2 
 										      ${isLiked ? 'text-red-400' : ''}`}>
 											{isLiked ? (
@@ -215,7 +325,7 @@ export default function Blog() {
 										</button>
 
 										<button
-											onClick={handleDislikeClick}
+											onClick={() => handleVote(blog._id, "downvote")}
 											className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2
 										      ${isDisliked ? 'text-blue-400' : ''}`}>
 											{isDisliked ? (
@@ -241,14 +351,21 @@ export default function Blog() {
 
 										<button
 											className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all p-1 sm:px-2
-										      ${isBookmarked ? 'text-red-400' : ''}`}
-											onClick={handleBookmarkClick}>
+												${isBookmarked ? 'text-red-400' : ''}`}
+											onClick={async () => {
+												if (blog?._id) {
+													await handleBookmarkClick(blog._id);
+												} else {
+													console.error("Blog ID is undefined");
+												}
+											}}>
 											{isBookmarked ? (
 												<IconBookmarkFilled className='h-5 w-auto' />
 											) : (
 												<IconBookmark className='h-5 w-auto' />
 											)}
 										</button>
+
 
 										<button
 											onClick={copyToClipboard}

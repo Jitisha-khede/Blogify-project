@@ -29,7 +29,7 @@ export default function LoginForm({
 	};
 
 	const handleSubmit = async e => {
-		console.log('form submitted!');
+		// console.log('form submitted!');
 		e.preventDefault();
 		setLoading(true);
 		setError(null);
@@ -38,13 +38,13 @@ export default function LoginForm({
 			login: formData.login,
 			password: formData.password,
 		};
-		console.log(formDataToSend);
+		// console.log(formDataToSend);
 
 		try {
 			const response = await loginUser(formDataToSend);
-			console.log(response);
+			// console.log(response);
 			// Store the token in localStorage for auth checks
-			localStorage.setItem('token', response.data.token);
+			localStorage.setItem('token', response.token);
 			if (onLoginSuccess) onLoginSuccess();
 			if (!preventRedirect) {
 				navigate('/blogs');
