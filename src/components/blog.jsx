@@ -111,7 +111,6 @@ export default function Blog() {
 	
 				if (!blogData) return;
 	
-				// Assuming blog.upvotes and blog.downvotes store user IDs who voted
 				const userId = localStorage.getItem("userId"); // Fetch user ID from storage
 	
 				const hasUpvoted = blogData.upvotes.includes(userId);
@@ -120,7 +119,6 @@ export default function Blog() {
 				setIsLiked(hasUpvoted);
 				setIsDisliked(hasDownvoted);
 	
-				// Update vote counts
 				setVotes({
 					upvotesCount: blogData.upvotes.length,
 					downvotesCount: blogData.downvotes.length
@@ -202,7 +200,7 @@ export default function Blog() {
 					setIsDisliked(true);
 				}
 	
-				setVotes(updatedVotes);
+				setVotes(updatedVotes.data);
 	
 			} catch (error) {
 				alert("Error voting blog: " + error.message);
@@ -318,7 +316,7 @@ export default function Blog() {
 											)}
 											<span className='ml-1'>
 												<NumberTicker
-													value={blog.upvotes.length}
+													value={votes.upvotesCount}
 													className='whitespace-pre-wrap font-medium tracking-tighter'
 												/>
 											</span>
@@ -334,7 +332,7 @@ export default function Blog() {
 												<IconThumbDown className='h-5 w-auto' />
 											)}
 											<NumberTicker
-												value={blog.downvotes.length}
+												value={votes.downvotesCount}
 												className='whitespace-pre-wrap font-medium tracking-tighter'
 											/>
 										</button>
